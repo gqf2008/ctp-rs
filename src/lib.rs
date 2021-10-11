@@ -11,12 +11,15 @@ use ffi::{QuoteSpiStub, TradeSpiStub};
 
 impl Drop for QuoteSpiStub {
     fn drop(&mut self) {
-        unreachable!("QuoteSpiStub should be manually dropped!")
+        // unsafe { self.destruct() }
+        unsafe { ffi::QuoteSpiStub_Destructor(self) }
+        //unreachable!("QuoteSpiStub should be manually dropped!")
     }
 }
 
 impl Drop for TradeSpiStub {
     fn drop(&mut self) {
-        unreachable!("TraderSpiStub should be manually dropped!")
+        unsafe { ffi::TradeSpiStub_Destructor(self) }
+        // unreachable!("TraderSpiStub should be manually dropped!")
     }
 }

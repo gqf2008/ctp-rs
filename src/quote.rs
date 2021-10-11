@@ -6,10 +6,12 @@ use anyhow::Result;
 use libc::c_void;
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 pub struct QuoteApi {
     api: *mut CThostFtdcMdApi,
     stub: Option<*mut QuoteSpiStub>,
+    seq: AtomicUsize,
 }
 
 impl Drop for QuoteApi {
@@ -28,7 +30,11 @@ impl QuoteApi {
     pub fn new(path: &str, udp: bool, multicast: bool) -> Result<Self> {
         let path = CString::new(path)?;
         let api = unsafe { CreateFtdcMdApi(path.as_ptr(), udp, multicast) };
-        Ok(Self { api, stub: None })
+        Ok(Self {
+            api,
+            stub: None,
+            seq: AtomicUsize::new(0),
+        })
     }
 
     pub fn version<'a>() -> core::result::Result<&'a str, std::str::Utf8Error> {
@@ -50,12 +56,14 @@ impl QuoteApi {
             Err(anyhow!("join error {}", ret))
         }
     }
+
     pub fn get_trading_day<'a>(&'a self) -> core::result::Result<&'a str, std::str::Utf8Error> {
         unsafe {
             let ptr = Quote_GetTradingDay(self.api);
             CStr::from_ptr(ptr).to_str()
         }
     }
+
     pub fn register_front(&self, addr: &str) -> Result<()> {
         let addr = CString::new(addr)?;
         unsafe {
@@ -63,6 +71,7 @@ impl QuoteApi {
         }
         Ok(())
     }
+
     pub fn register_name_server(&self, addr: &str) -> Result<()> {
         let addr = CString::new(addr)?;
         unsafe {
@@ -70,6 +79,7 @@ impl QuoteApi {
         }
         Ok(())
     }
+
     pub fn register_fens_user_info(&self, broker_id: &str, user_id: &str, mode: i8) -> Result<()> {
         let mut info = CThostFtdcFensUserInfoField::default();
         unsafe {
@@ -81,15 +91,6 @@ impl QuoteApi {
         }
         Ok(())
     }
-    // extern "C" void Quote_RegisterFensUserInfo(CThostFtdcMdApi *self, CThostFtdcFensUserInfoField *pFensUserInfo);
-    // extern "C" void Quote_RegisterSpi(CThostFtdcMdApi *self, CThostFtdcMdSpi *pSpi);
-    // extern "C" int Quote_SubscribeMarketData(CThostFtdcMdApi *self, char *ppInstrumentID[], int nCount);
-    // extern "C" int Quote_UnSubscribeMarketData(CThostFtdcMdApi *self, char *ppInstrumentID[], int nCount);
-    // extern "C" int Quote_SubscribeForQuoteRsp(CThostFtdcMdApi *self, char *ppInstrumentID[], int nCount);
-    // extern "C" int Quote_UnSubscribeForQuoteRsp(CThostFtdcMdApi *self, char *ppInstrumentID[], int nCount);
-    // extern "C" int Quote_ReqUserLogin(CThostFtdcMdApi *self, CThostFtdcReqUserLoginField *pReqUserLoginField, int nRequestID);
-    // extern "C" int Quote_ReqUserLogout(CThostFtdcMdApi *self, CThostFtdcUserLogoutField *pUserLogout, int nRequestID);
-    // extern "C" int Quote_ReqQryMulticastInstrument(CThostFtdcMdApi *self, CThostFtdcQryMulticastInstrumentField *pQryMulticastInstrument, int nRequestID);
 
     pub fn register_spi<T: QuoteSpi>(&mut self, spi: T) {
         let trait_object_box: Box<Box<dyn QuoteSpi>> = Box::new(Box::new(spi));
@@ -101,6 +102,88 @@ impl QuoteApi {
         let ptr = Box::into_raw(Box::new(quote_spi_stub));
         self.stub = Some(ptr);
         unsafe { Quote_RegisterSpi(self.api, ptr as *mut CThostFtdcMdSpi) };
+    }
+
+    pub fn subscribe_market_data(&self, symbols: &[&str]) -> Result<()> {
+        unsafe {
+            let mut symbols: Vec<*mut c_char> = symbols
+                .iter()
+                .map(|symbol| CString::new(*symbol).unwrap().as_c_str().as_ptr() as *mut c_char)
+                .collect();
+            Quote_SubscribeMarketData(self.api, symbols.as_mut_ptr(), symbols.len() as i32);
+        }
+        Ok(())
+    }
+
+    pub fn unsubscribe_market_data(&self, symbols: &[&str]) -> Result<()> {
+        unsafe {
+            let mut symbols: Vec<*mut c_char> = symbols
+                .iter()
+                .map(|symbol| CString::new(*symbol).unwrap().as_c_str().as_ptr() as *mut c_char)
+                .collect();
+            Quote_UnSubscribeMarketData(self.api, symbols.as_mut_ptr(), symbols.len() as i32);
+        }
+        Ok(())
+    }
+
+    pub fn subscribe_for_quote(&self, symbols: &[&str]) -> Result<()> {
+        unsafe {
+            let mut symbols: Vec<*mut c_char> = symbols
+                .iter()
+                .map(|symbol| CString::new(*symbol).unwrap().as_c_str().as_ptr() as *mut c_char)
+                .collect();
+            Quote_SubscribeForQuoteRsp(self.api, symbols.as_mut_ptr(), symbols.len() as i32);
+        }
+        Ok(())
+    }
+
+    pub fn unsubscribe_for_quote(&self, symbols: &[&str]) -> Result<()> {
+        unsafe {
+            let mut symbols: Vec<*mut c_char> = symbols
+                .iter()
+                .map(|symbol| CString::new(*symbol).unwrap().as_c_str().as_ptr() as *mut c_char)
+                .collect();
+            Quote_UnSubscribeForQuoteRsp(self.api, symbols.as_mut_ptr(), symbols.len() as i32);
+        }
+        Ok(())
+    }
+
+    pub fn login(&self, broker_id: &str, user_id: &str, mode: i8) -> Result<()> {
+        let mut info = CThostFtdcReqUserLoginField::default();
+        unsafe {
+            info.BrokerID
+                .clone_from_slice(std::mem::transmute(broker_id));
+            info.UserID.clone_from_slice(std::mem::transmute(user_id));
+            let seq = self.seq.fetch_add(1, Ordering::SeqCst);
+
+            Quote_ReqUserLogin(self.api, &mut info, seq as i32);
+        }
+        Ok(())
+    }
+
+    pub fn logout(&self, broker_id: &str, user_id: &str, mode: i8) -> Result<()> {
+        let mut info = CThostFtdcUserLogoutField::default();
+        unsafe {
+            info.BrokerID
+                .clone_from_slice(std::mem::transmute(broker_id));
+            info.UserID.clone_from_slice(std::mem::transmute(user_id));
+            let seq = self.seq.fetch_add(1, Ordering::SeqCst);
+
+            Quote_ReqUserLogout(self.api, &mut info, seq as i32);
+        }
+        Ok(())
+    }
+
+    pub fn query_multicast_instrument(&self, symbol: &str, topic_id: i32) -> Result<()> {
+        let mut info = CThostFtdcQryMulticastInstrumentField::default();
+        unsafe {
+            info.InstrumentID
+                .clone_from_slice(std::mem::transmute(symbol));
+            info.TopicID = topic_id;
+            let seq = self.seq.fetch_add(1, Ordering::SeqCst);
+            Quote_ReqQryMulticastInstrument(self.api, &mut info, seq as i32);
+        }
+        Ok(())
     }
 }
 
