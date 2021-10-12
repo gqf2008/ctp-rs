@@ -11,6 +11,66 @@ use ffi::{QuoteSpiStub, TradeSpiStub};
 use libc::c_char;
 use std::ffi::CStr;
 
+#[doc = "配置信息"]
+#[derive(Default, Debug, Clone, Hash, PartialEq, Eq)]
+pub struct Configuration {
+    #[doc = "经纪公司代码"]
+    pub broker_id: String,
+    #[doc = "用户代码"]
+    pub user_id: String,
+    #[doc = "用户端系统内部信息"]
+    pub system_info: String,
+    #[doc = "登录成功时间"]
+    pub login_time: String,
+    #[doc = "App代码"]
+    pub appid: String,
+    #[doc = "用户公网IP"]
+    pub public_ip: String,
+    #[doc = "交易日"]
+    pub trading_day: String,
+    #[doc = "密码"]
+    pub passwd: String,
+    #[doc = "用户端产品信息"]
+    pub user_product_info: String,
+    #[doc = "接口端产品信息"]
+    pub interface_product_info: String,
+    #[doc = "协议信息"]
+    pub protocol_info: String,
+    #[doc = "Mac地址"]
+    pub mac_addr: String,
+    #[doc = "动态密码"]
+    pub one_time_passwd: String,
+    #[doc = "登录备注"]
+    pub login_remark: String,
+    #[doc = "终端IP端口"]
+    pub port: i32,
+    #[doc = "终端IP地址"]
+    pub ip_addr: String,
+}
+pub trait FromRaw<T> {
+    unsafe fn from_raw(raw: T) -> Self;
+}
+
+#[macro_export]
+macro_rules! impl_ffi_convert {
+    ($rtype:ty, $ctype: ty, $lb: expr, $ub: expr) => {
+        // impl FromRaw<$ctype> for $rtype {
+        //     unsafe fn from_raw(from: $ctype) -> Self {
+        //         assert!($lb <= from as u32 && from as u32 <= $ub);
+        //         std::mem::transmute::<_, $rtype>(from)
+        //     }
+        // }
+
+        impl From<$rtype> for $ctype {
+            fn from(r: $rtype) -> Self {
+                unsafe { std::mem::transmute::<_, $ctype>(r) }
+            }
+        }
+    };
+    ($rtype:ty, $ctype: ty, $ub: expr) => {
+        impl_ffi_convert!($rtype, $ctype, 0, $ub);
+    };
+}
 
 impl Drop for QuoteSpiStub {
     fn drop(&mut self) {

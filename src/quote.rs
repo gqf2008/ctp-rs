@@ -1,4 +1,4 @@
-mod quote_ffi;
+mod stub_ffi;
 
 use super::FromCBuf;
 use crate::ffi::*;
