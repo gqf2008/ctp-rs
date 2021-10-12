@@ -8,6 +8,13 @@ use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
+impl Drop for TradeSpiStub {
+    fn drop(&mut self) {
+        unsafe { TradeSpiStub_Destructor(self) }
+        // unreachable!("TraderSpiStub should be manually dropped!")
+    }
+}
+
 pub struct TradeApi {
     api: *mut CThostFtdcTraderApi,
     stub: Option<*mut TradeSpiStub>,

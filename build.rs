@@ -55,15 +55,7 @@ fn add_search_path() {
 
 #[cfg(target_os = "windows")]
 fn add_search_path() {
-    for path in std::env::var("PATH")
-        .unwrap_or_else(|_| "".to_string())
-        .split(";")
-    {
-        if path.trim().len() == 0 {
-            continue;
-        }
-        println!("cargo:rustc-link-search={}", path);
-    }
+    println!("cargo:rustc-link-search={}", "lib/win64");
 }
 
 #[cfg(target_arch = "x86_64")]

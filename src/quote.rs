@@ -9,6 +9,14 @@ use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
+impl Drop for QuoteSpiStub {
+    fn drop(&mut self) {
+        // unsafe { self.destruct() }
+        unsafe { QuoteSpiStub_Destructor(self) }
+        //unreachable!("QuoteSpiStub should be manually dropped!")
+    }
+}
+
 pub struct QuoteApi {
     api: *mut CThostFtdcMdApi,
     stub: Option<*mut QuoteSpiStub>,

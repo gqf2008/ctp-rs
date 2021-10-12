@@ -11,6 +11,11 @@ extern "C" const char *Quote_GetApiVersion()
 {
     return CThostFtdcMdApi::GetApiVersion();
 }
+extern "C" void Quote_Release(CThostFtdcMdApi *self)
+{
+    auto s = static_cast<CThostFtdcMdApi *>(self);
+    return s->Release();
+}
 extern "C" void Quote_Init(CThostFtdcMdApi *self)
 {
     auto s = static_cast<CThostFtdcMdApi *>(self);
@@ -21,6 +26,7 @@ extern "C" int Quote_Join(CThostFtdcMdApi *self)
     auto s = static_cast<CThostFtdcMdApi *>(self);
     return s->Join();
 }
+
 extern "C" const char *Quote_GetTradingDay(CThostFtdcMdApi *self)
 {
     auto s = static_cast<CThostFtdcMdApi *>(self);
@@ -80,6 +86,65 @@ extern "C" int Quote_ReqQryMulticastInstrument(CThostFtdcMdApi *self, CThostFtdc
 {
     auto s = static_cast<CThostFtdcMdApi *>(self);
     return s->ReqQryMulticastInstrument(pQryMulticastInstrument, nRequestID);
+}
+
+// *********************** QuoteSpiStub **************************
+QuoteSpiStub::QuoteSpiStub(void *rust_object) : rust_object(rust_object) {}
+QuoteSpiStub::~QuoteSpiStub()
+{
+    QuoteSpiStub_Rust_Destructor(this->rust_object);
+}
+void QuoteSpiStub::OnFrontConnected()
+{
+    return QuoteSpiStub_Rust_OnFrontConnected(this->rust_object);
+}
+void QuoteSpiStub::OnFrontDisconnected(int nReason)
+{
+    return QuoteSpiStub_Rust_OnFrontDisconnected(this->rust_object, nReason);
+}
+void QuoteSpiStub::OnHeartBeatWarning(int nTimeLapse)
+{
+    return QuoteSpiStub_Rust_OnHeartBeatWarning(this->rust_object, nTimeLapse);
+}
+void QuoteSpiStub::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+    return QuoteSpiStub_Rust_OnRspUserLogin(this->rust_object, pRspUserLogin, pRspInfo, nRequestID, bIsLast);
+}
+void QuoteSpiStub::OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+    return QuoteSpiStub_Rust_OnRspUserLogout(this->rust_object, pUserLogout, pRspInfo, nRequestID, bIsLast);
+}
+void QuoteSpiStub::OnRspQryMulticastInstrument(CThostFtdcMulticastInstrumentField *pMulticastInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+    return QuoteSpiStub_Rust_OnRspQryMulticastInstrument(this->rust_object, pMulticastInstrument, pRspInfo, nRequestID, bIsLast);
+}
+void QuoteSpiStub::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+    return QuoteSpiStub_Rust_OnRspError(this->rust_object, pRspInfo, nRequestID, bIsLast);
+}
+void QuoteSpiStub::OnRspSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+    return QuoteSpiStub_Rust_OnRspSubMarketData(this->rust_object, pSpecificInstrument, pRspInfo, nRequestID, bIsLast);
+}
+void QuoteSpiStub::OnRspUnSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+    return QuoteSpiStub_Rust_OnRspUnSubMarketData(this->rust_object, pSpecificInstrument, pRspInfo, nRequestID, bIsLast);
+}
+void QuoteSpiStub::OnRspSubForQuoteRsp(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+    return QuoteSpiStub_Rust_OnRspSubForQuoteRsp(this->rust_object, pSpecificInstrument, pRspInfo, nRequestID, bIsLast);
+}
+void QuoteSpiStub::OnRspUnSubForQuoteRsp(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+    return QuoteSpiStub_Rust_OnRspUnSubForQuoteRsp(this->rust_object, pSpecificInstrument, pRspInfo, nRequestID, bIsLast);
+}
+void QuoteSpiStub::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData)
+{
+    return QuoteSpiStub_Rust_OnRtnDepthMarketData(this->rust_object, pDepthMarketData);
+}
+void QuoteSpiStub::OnRtnForQuoteRsp(CThostFtdcForQuoteRspField *pForQuoteRsp)
+{
+    return QuoteSpiStub_Rust_OnRtnForQuoteRsp(this->rust_object, pForQuoteRsp);
 }
 
 /////////////Trade Api////////////////
@@ -580,65 +645,6 @@ extern "C" int Trade_ReqQryRiskSettleProductStatus(CThostFtdcTraderApi *self, CT
 {
     auto s = static_cast<CThostFtdcTraderApi *>(self);
     return s->ReqQryRiskSettleProductStatus(pQryRiskSettleProductStatus, nRequestID);
-}
-
-// *********************** QuoteSpiStub **************************
-QuoteSpiStub::QuoteSpiStub(void *rust_object) : rust_object(rust_object) {}
-QuoteSpiStub::~QuoteSpiStub()
-{
-    QuoteSpiStub_Rust_Destructor(this->rust_object);
-}
-void QuoteSpiStub::OnFrontConnected()
-{
-    return QuoteSpiStub_Rust_OnFrontConnected(this->rust_object);
-}
-void QuoteSpiStub::OnFrontDisconnected(int nReason)
-{
-    return QuoteSpiStub_Rust_OnFrontDisconnected(this->rust_object, nReason);
-}
-void QuoteSpiStub::OnHeartBeatWarning(int nTimeLapse)
-{
-    return QuoteSpiStub_Rust_OnHeartBeatWarning(this->rust_object, nTimeLapse);
-}
-void QuoteSpiStub::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
-{
-    return QuoteSpiStub_Rust_OnRspUserLogin(this->rust_object, pRspUserLogin, pRspInfo, nRequestID, bIsLast);
-}
-void QuoteSpiStub::OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
-{
-    return QuoteSpiStub_Rust_OnRspUserLogout(this->rust_object, pUserLogout, pRspInfo, nRequestID, bIsLast);
-}
-void QuoteSpiStub::OnRspQryMulticastInstrument(CThostFtdcMulticastInstrumentField *pMulticastInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
-{
-    return QuoteSpiStub_Rust_OnRspQryMulticastInstrument(this->rust_object, pMulticastInstrument, pRspInfo, nRequestID, bIsLast);
-}
-void QuoteSpiStub::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
-{
-    return QuoteSpiStub_Rust_OnRspError(this->rust_object, pRspInfo, nRequestID, bIsLast);
-}
-void QuoteSpiStub::OnRspSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
-{
-    return QuoteSpiStub_Rust_OnRspSubMarketData(this->rust_object, pSpecificInstrument, pRspInfo, nRequestID, bIsLast);
-}
-void QuoteSpiStub::OnRspUnSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
-{
-    return QuoteSpiStub_Rust_OnRspUnSubMarketData(this->rust_object, pSpecificInstrument, pRspInfo, nRequestID, bIsLast);
-}
-void QuoteSpiStub::OnRspSubForQuoteRsp(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
-{
-    return QuoteSpiStub_Rust_OnRspSubForQuoteRsp(this->rust_object, pSpecificInstrument, pRspInfo, nRequestID, bIsLast);
-}
-void QuoteSpiStub::OnRspUnSubForQuoteRsp(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
-{
-    return QuoteSpiStub_Rust_OnRspUnSubForQuoteRsp(this->rust_object, pSpecificInstrument, pRspInfo, nRequestID, bIsLast);
-}
-void QuoteSpiStub::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData)
-{
-    return QuoteSpiStub_Rust_OnRtnDepthMarketData(this->rust_object, pDepthMarketData);
-}
-void QuoteSpiStub::OnRtnForQuoteRsp(CThostFtdcForQuoteRspField *pForQuoteRsp)
-{
-    return QuoteSpiStub_Rust_OnRtnForQuoteRsp(this->rust_object, pForQuoteRsp);
 }
 
 // ***********************TradeSpiStub **************************

@@ -1,15 +1,15 @@
 [package]
+edition = "2018"
 name = "ctp-rs"
 version = "0.1.0"
-edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-libc = "0.2.103"
 anyhow = "1.0.44"
-thiserror = "1.0.30"
+libc = "0.2.103"
 log = "0.4.14"
+thiserror = "1.0.30"
 
 [build-dependencies]
 bindgen = "0.59.1"
