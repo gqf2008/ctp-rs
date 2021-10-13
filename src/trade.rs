@@ -1,6 +1,6 @@
 mod stub_ffi;
 
-use super::{impl_ffi_convert, Configuration, FromCBuf, Response};
+use super::{Configuration, Response};
 
 use crate::ffi::*;
 use anyhow::anyhow;
@@ -47,7 +47,7 @@ impl TradeApi {
             conf: Default::default(),
         })
     }
-    pub fn with_user_login(mut self, conf: Configuration) -> Self {
+    pub fn with_configuration(mut self, conf: Configuration) -> Self {
         self.conf = conf;
         self
     }
@@ -1198,7 +1198,7 @@ pub trait TradeSpi {
 
     ///请求查询投资者结算结果响应
     fn on_qry_settlement_info(&self, info: &CThostFtdcSettlementInfoField, result: &Response) {
-        log::debug!("result {:?}", result);
+        log::debug!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询转帐银行响应
@@ -1212,7 +1212,7 @@ pub trait TradeSpi {
         info: &CThostFtdcInvestorPositionDetailField,
         result: &Response,
     ) {
-        log::debug!("result {:?}", result);
+        log::debug!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询客户通知响应
@@ -1786,205 +1786,9 @@ pub trait TradeSpi {
         info: &CThostFtdcRiskSettleProductStatusField,
         result: &Response,
     ) {
-        log::debug!("result {:?}", result);
+        log::debug!("info {:?} result {:?}", info, result);
     }
 }
 
 #[doc = "重传方式"]
 pub type ResumeType = THOST_TE_RESUME_TYPE;
-
-impl<'a> From<&'a Configuration> for CThostFtdcUserSystemInfoField {
-    fn from(r: &'a Configuration) -> CThostFtdcUserSystemInfoField {
-        let mut field = CThostFtdcUserSystemInfoField::default();
-        unsafe {
-            field
-                .BrokerID
-                .clone_from_slice(std::mem::transmute(r.broker_id.as_str()));
-            field
-                .UserID
-                .clone_from_slice(std::mem::transmute(r.user_id.as_str()));
-            field
-                .ClientSystemInfo
-                .clone_from_slice(std::mem::transmute(r.system_info.as_str()));
-            field.ClientSystemInfoLen = r.system_info.as_bytes().len() as i32;
-            field.ClientIPPort = r.port;
-            field
-                .ClientLoginTime
-                .clone_from_slice(std::mem::transmute(r.login_time.as_str()));
-            field
-                .ClientAppID
-                .clone_from_slice(std::mem::transmute(r.appid.as_str()));
-            field
-                .ClientPublicIP
-                .clone_from_slice(std::mem::transmute(r.public_ip.as_str()));
-            field
-                .ClientLoginRemark
-                .clone_from_slice(std::mem::transmute(r.login_remark.as_str()));
-        }
-        field
-    }
-}
-
-impl<'a> From<&'a Configuration> for CThostFtdcReqUserLoginField {
-    fn from(r: &'a Configuration) -> CThostFtdcReqUserLoginField {
-        let mut field = CThostFtdcReqUserLoginField::default();
-        unsafe {
-            field
-                .BrokerID
-                .clone_from_slice(std::mem::transmute(r.broker_id.as_str()));
-            field
-                .UserID
-                .clone_from_slice(std::mem::transmute(r.user_id.as_str()));
-            field
-                .Password
-                .clone_from_slice(std::mem::transmute(r.passwd.as_str()));
-
-            field.ClientIPPort = r.port;
-            field
-                .UserProductInfo
-                .clone_from_slice(std::mem::transmute(r.user_product_info.as_str()));
-            field
-                .InterfaceProductInfo
-                .clone_from_slice(std::mem::transmute(r.interface_product_info.as_str()));
-            field
-                .ProtocolInfo
-                .clone_from_slice(std::mem::transmute(r.protocol_info.as_str()));
-            field
-                .MacAddress
-                .clone_from_slice(std::mem::transmute(r.mac_addr.as_str()));
-            field
-                .OneTimePassword
-                .clone_from_slice(std::mem::transmute(r.one_time_passwd.as_str()));
-            field
-                .LoginRemark
-                .clone_from_slice(std::mem::transmute(r.login_remark.as_str()));
-            field
-                .ClientIPAddress
-                .clone_from_slice(std::mem::transmute(r.ip_addr.as_str()));
-        }
-        field
-    }
-}
-
-impl<'a> From<&'a Configuration> for CThostFtdcReqUserLoginWithCaptchaField {
-    fn from(r: &'a Configuration) -> CThostFtdcReqUserLoginWithCaptchaField {
-        let mut field = CThostFtdcReqUserLoginWithCaptchaField::default();
-        unsafe {
-            field
-                .BrokerID
-                .clone_from_slice(std::mem::transmute(r.broker_id.as_str()));
-            field
-                .UserID
-                .clone_from_slice(std::mem::transmute(r.user_id.as_str()));
-            field
-                .Password
-                .clone_from_slice(std::mem::transmute(r.passwd.as_str()));
-
-            field.ClientIPPort = r.port;
-            field
-                .UserProductInfo
-                .clone_from_slice(std::mem::transmute(r.user_product_info.as_str()));
-            field
-                .InterfaceProductInfo
-                .clone_from_slice(std::mem::transmute(r.interface_product_info.as_str()));
-            field
-                .ProtocolInfo
-                .clone_from_slice(std::mem::transmute(r.protocol_info.as_str()));
-            field
-                .MacAddress
-                .clone_from_slice(std::mem::transmute(r.mac_addr.as_str()));
-            field
-                .Captcha
-                .clone_from_slice(std::mem::transmute(r.captcha.as_str()));
-            field
-                .LoginRemark
-                .clone_from_slice(std::mem::transmute(r.login_remark.as_str()));
-            field
-                .ClientIPAddress
-                .clone_from_slice(std::mem::transmute(r.ip_addr.as_str()));
-        }
-        field
-    }
-}
-
-impl<'a> From<&'a Configuration> for CThostFtdcReqUserLoginWithTextField {
-    fn from(r: &'a Configuration) -> CThostFtdcReqUserLoginWithTextField {
-        let mut field = CThostFtdcReqUserLoginWithTextField::default();
-        unsafe {
-            field
-                .BrokerID
-                .clone_from_slice(std::mem::transmute(r.broker_id.as_str()));
-            field
-                .UserID
-                .clone_from_slice(std::mem::transmute(r.user_id.as_str()));
-            field
-                .Password
-                .clone_from_slice(std::mem::transmute(r.passwd.as_str()));
-
-            field.ClientIPPort = r.port;
-            field
-                .UserProductInfo
-                .clone_from_slice(std::mem::transmute(r.user_product_info.as_str()));
-            field
-                .InterfaceProductInfo
-                .clone_from_slice(std::mem::transmute(r.interface_product_info.as_str()));
-            field
-                .ProtocolInfo
-                .clone_from_slice(std::mem::transmute(r.protocol_info.as_str()));
-            field
-                .MacAddress
-                .clone_from_slice(std::mem::transmute(r.mac_addr.as_str()));
-            field
-                .Text
-                .clone_from_slice(std::mem::transmute(r.text.as_str()));
-            field
-                .LoginRemark
-                .clone_from_slice(std::mem::transmute(r.login_remark.as_str()));
-            field
-                .ClientIPAddress
-                .clone_from_slice(std::mem::transmute(r.ip_addr.as_str()));
-        }
-        field
-    }
-}
-
-impl<'a> From<&'a Configuration> for CThostFtdcReqUserLoginWithOTPField {
-    fn from(r: &'a Configuration) -> CThostFtdcReqUserLoginWithOTPField {
-        let mut field = CThostFtdcReqUserLoginWithOTPField::default();
-        unsafe {
-            field
-                .BrokerID
-                .clone_from_slice(std::mem::transmute(r.broker_id.as_str()));
-            field
-                .UserID
-                .clone_from_slice(std::mem::transmute(r.user_id.as_str()));
-            field
-                .Password
-                .clone_from_slice(std::mem::transmute(r.passwd.as_str()));
-
-            field.ClientIPPort = r.port;
-            field
-                .UserProductInfo
-                .clone_from_slice(std::mem::transmute(r.user_product_info.as_str()));
-            field
-                .InterfaceProductInfo
-                .clone_from_slice(std::mem::transmute(r.interface_product_info.as_str()));
-            field
-                .ProtocolInfo
-                .clone_from_slice(std::mem::transmute(r.protocol_info.as_str()));
-            field
-                .MacAddress
-                .clone_from_slice(std::mem::transmute(r.mac_addr.as_str()));
-            field
-                .OTPPassword
-                .clone_from_slice(std::mem::transmute(r.otp_passwd.as_str()));
-            field
-                .LoginRemark
-                .clone_from_slice(std::mem::transmute(r.login_remark.as_str()));
-            field
-                .ClientIPAddress
-                .clone_from_slice(std::mem::transmute(r.ip_addr.as_str()));
-        }
-        field
-    }
-}

@@ -52,11 +52,10 @@ pub unsafe extern "C" fn QuoteSpiStub_Rust_OnRspUserLogin(
     is_last: bool,
 ) {
     let spi = &mut **(spi as *mut *mut dyn QuoteSpi);
-    let user = UserLogin::from(&*info);
     let resp = Response::from(&*result)
         .with_req_id(req_id)
         .with_is_last(is_last);
-    spi.on_login(&user, &resp);
+    spi.on_login(&*info, &resp);
 }
 
 #[no_mangle]
@@ -68,11 +67,10 @@ pub unsafe extern "C" fn QuoteSpiStub_Rust_OnRspUserLogout(
     is_last: bool,
 ) {
     let spi = &mut **(spi as *mut *mut dyn QuoteSpi);
-    let user = UserLogout::from(&*info);
     let resp = Response::from(&*result)
         .with_req_id(req_id)
         .with_is_last(is_last);
-    spi.on_logout(&user, &resp);
+    spi.on_logout(&*info, &resp);
 }
 
 #[no_mangle]
@@ -84,11 +82,11 @@ pub unsafe extern "C" fn QuoteSpiStub_Rust_OnRspQryMulticastInstrument(
     is_last: bool,
 ) {
     let spi = &mut **(spi as *mut *mut dyn QuoteSpi);
-    let info = MulticastInstrument::from(&*info);
+
     let resp = Response::from(&*result)
         .with_req_id(req_id)
         .with_is_last(is_last);
-    spi.on_query_multicast_instrument(&info, &resp);
+    spi.on_query_multicast_instrument(&*info, &resp);
 }
 
 #[no_mangle]
@@ -100,11 +98,11 @@ pub unsafe extern "C" fn QuoteSpiStub_Rust_OnRspSubMarketData(
     is_last: bool,
 ) {
     let spi = &mut **(spi as *mut *mut dyn QuoteSpi);
-    let info = SpecificInstrument::from(&*info);
+
     let resp = Response::from(&*result)
         .with_req_id(req_id)
         .with_is_last(is_last);
-    spi.on_sub_market_data(&info, &resp);
+    spi.on_sub_market_data(&*info, &resp);
 }
 #[no_mangle]
 pub unsafe extern "C" fn QuoteSpiStub_Rust_OnRspUnSubMarketData(
@@ -115,11 +113,11 @@ pub unsafe extern "C" fn QuoteSpiStub_Rust_OnRspUnSubMarketData(
     is_last: bool,
 ) {
     let spi = &mut **(spi as *mut *mut dyn QuoteSpi);
-    let info = SpecificInstrument::from(&*info);
+
     let resp = Response::from(&*result)
         .with_req_id(req_id)
         .with_is_last(is_last);
-    spi.on_unsub_market_data(&info, &resp);
+    spi.on_unsub_market_data(&*info, &resp);
 }
 #[no_mangle]
 pub unsafe extern "C" fn QuoteSpiStub_Rust_OnRspSubForQuoteRsp(
@@ -130,11 +128,11 @@ pub unsafe extern "C" fn QuoteSpiStub_Rust_OnRspSubForQuoteRsp(
     is_last: bool,
 ) {
     let spi = &mut **(spi as *mut *mut dyn QuoteSpi);
-    let info = SpecificInstrument::from(&*info);
+
     let resp = Response::from(&*result)
         .with_req_id(req_id)
         .with_is_last(is_last);
-    spi.on_sub_for_quote(&info, &resp);
+    spi.on_sub_for_quote(&*info, &resp);
 }
 
 #[no_mangle]
@@ -146,11 +144,11 @@ pub unsafe extern "C" fn QuoteSpiStub_Rust_OnRspUnSubForQuoteRsp(
     is_last: bool,
 ) {
     let spi = &mut **(spi as *mut *mut dyn QuoteSpi);
-    let info = SpecificInstrument::from(&*info);
+
     let resp = Response::from(&*result)
         .with_req_id(req_id)
         .with_is_last(is_last);
-    spi.on_unsub_for_quote(&info, &resp);
+    spi.on_unsub_for_quote(&*info, &resp);
 }
 
 #[no_mangle]
@@ -159,8 +157,7 @@ pub unsafe extern "C" fn QuoteSpiStub_Rust_OnRtnDepthMarketData(
     data: *const CThostFtdcDepthMarketDataField,
 ) {
     let spi = &mut **(spi as *mut *mut dyn QuoteSpi);
-    let quote = DepthMarketData::from(&*data);
-    spi.on_depth_market_data(&quote);
+    spi.on_depth_market_data(&*data);
 }
 
 #[no_mangle]
@@ -169,6 +166,5 @@ pub unsafe extern "C" fn QuoteSpiStub_Rust_OnRtnForQuoteRsp(
     info: *const CThostFtdcForQuoteRspField,
 ) {
     let spi = &mut **(spi as *mut *mut dyn QuoteSpi);
-    let quote = ForQuote::from(&*info);
-    spi.on_for_quote(&quote);
+    spi.on_for_quote(&*info);
 }
