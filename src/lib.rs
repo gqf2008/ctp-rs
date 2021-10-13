@@ -7,7 +7,7 @@ mod ffi {
     include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 }
 
-use ffi::{QuoteSpiStub, TradeSpiStub};
+pub use ffi::*;
 use libc::c_char;
 use std::ffi::CStr;
 
@@ -22,6 +22,8 @@ pub struct Configuration {
     pub system_info: String,
     #[doc = "登录成功时间"]
     pub login_time: String,
+    #[doc = "认证码"]
+    pub auth_code: String,
     #[doc = "App代码"]
     pub appid: String,
     #[doc = "用户公网IP"]
@@ -46,6 +48,15 @@ pub struct Configuration {
     pub port: i32,
     #[doc = "终端IP地址"]
     pub ip_addr: String,
+    #[doc = "图形验证码的文字内容"]
+    pub captcha: String,
+    #[doc = "短信验证码文字内容"]
+    pub text: String,
+    #[doc = "OTP密码"]
+    pub otp_passwd: String,
+    pub front_addr: String,
+    pub ns_addr: String,
+    pub login_mode: i8,
 }
 pub trait FromRaw<T> {
     unsafe fn from_raw(raw: T) -> Self;
@@ -151,5 +162,36 @@ impl ToCBuf for String {
         }
 
         sarr
+    }
+}
+
+#[doc = "接口应答"]
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+pub struct Response {
+    pub code: i32,
+    pub message: String,
+    pub req_id: Option<i32>,
+    pub is_last: Option<bool>,
+}
+
+impl Response {
+    pub fn with_req_id(mut self, req_id: i32) -> Self {
+        self.req_id = Some(req_id);
+        self
+    }
+    pub fn with_is_last(mut self, is_last: bool) -> Self {
+        self.is_last = Some(is_last);
+        self
+    }
+}
+
+impl<'a> From<&'a CThostFtdcRspInfoField> for Response {
+    fn from(field: &'a CThostFtdcRspInfoField) -> Self {
+        Response {
+            code: field.ErrorID,
+            message: String::from_c_buf(&field.ErrorMsg),
+            req_id: None,
+            is_last: None,
+        }
     }
 }

@@ -17,6 +17,7 @@ fn main() {
         .compile("ctp_bridge");
     let bindings = bindgen::Builder::default()
         .header("src/bridge.hpp")
+        .layout_tests(false)
         .ignore_methods()
         .rustified_enum(".*")
         .blocklist_item("CTP_SIDE_TYPE")

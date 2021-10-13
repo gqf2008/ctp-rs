@@ -1,6 +1,6 @@
 mod stub_ffi;
 
-use super::FromCBuf;
+use super::{FromCBuf, Response};
 use crate::ffi::*;
 use anyhow::anyhow;
 use anyhow::Result;
@@ -163,6 +163,7 @@ impl QuoteApi {
             info.BrokerID
                 .clone_from_slice(std::mem::transmute(broker_id));
             info.UserID.clone_from_slice(std::mem::transmute(user_id));
+
             let seq = self.seq.fetch_add(1, Ordering::SeqCst);
 
             Quote_ReqUserLogin(self.api, &mut info, seq as i32);
@@ -170,7 +171,7 @@ impl QuoteApi {
         Ok(())
     }
 
-    pub fn logout(&self, broker_id: &str, user_id: &str, mode: i8) -> Result<()> {
+    pub fn logout(&self, broker_id: &str, user_id: &str) -> Result<()> {
         let mut info = CThostFtdcUserLogoutField::default();
         unsafe {
             info.BrokerID
@@ -260,37 +261,6 @@ pub trait QuoteSpi {
     ///询价通知
     fn on_for_quote(&self, info: &ForQuote) {
         log::debug!("on_for_quote info {:?}", info);
-    }
-}
-
-#[doc = "接口应答"]
-#[derive(Debug, Clone, Hash, PartialEq, Eq)]
-pub struct Response {
-    pub code: i32,
-    pub message: String,
-    pub req_id: Option<i32>,
-    pub is_last: Option<bool>,
-}
-
-impl Response {
-    pub fn with_req_id(mut self, req_id: i32) -> Self {
-        self.req_id = Some(req_id);
-        self
-    }
-    pub fn with_is_last(mut self, is_last: bool) -> Self {
-        self.is_last = Some(is_last);
-        self
-    }
-}
-
-impl<'a> From<&'a CThostFtdcRspInfoField> for Response {
-    fn from(field: &'a CThostFtdcRspInfoField) -> Self {
-        Response {
-            code: field.ErrorID,
-            message: String::from_c_buf(&field.ErrorMsg),
-            req_id: None,
-            is_last: None,
-        }
     }
 }
 
