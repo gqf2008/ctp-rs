@@ -1,15 +1,12 @@
+pub mod ffi;
 pub mod quote;
 pub mod trade;
-mod ffi {
-    #![allow(non_upper_case_globals)]
-    #![allow(non_camel_case_types)]
-    #![allow(non_snake_case)]
-    include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
-}
 
 pub use ffi::*;
 use libc::c_char;
+pub use quote::*;
 use std::ffi::CStr;
+pub use trade::*;
 
 #[doc = "配置信息"]
 #[derive(Default, Debug, Clone, Hash, PartialEq, Eq)]
@@ -195,8 +192,6 @@ impl<'a> From<&'a CThostFtdcRspInfoField> for Response {
         }
     }
 }
-
-
 
 impl<'a> From<&'a Configuration> for CThostFtdcUserSystemInfoField {
     fn from(r: &'a Configuration) -> CThostFtdcUserSystemInfoField {
