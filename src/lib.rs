@@ -51,6 +51,7 @@ pub struct Configuration {
     pub text: String,
     #[doc = "OTP密码"]
     pub otp_passwd: String,
+    #[doc = "前置机IP地址"]
     pub front_addr: String,
     pub ns_addr: String,
     pub login_mode: i8,

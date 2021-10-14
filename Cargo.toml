@@ -10,6 +10,7 @@ anyhow = "1.0.44"
 libc = "0.2.103"
 log = "0.4.14"
 thiserror = "1.0.30"
+linux-futex = "0.1.1"
 
 [build-dependencies]
 bindgen = "0.59.1"
