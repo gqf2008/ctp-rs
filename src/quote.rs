@@ -2,6 +2,7 @@ mod stub_ffi;
 
 use super::{Configuration, Response};
 use crate::ffi::*;
+use crate::{FromCBuf, ToArray};
 use anyhow::anyhow;
 use anyhow::Result;
 use libc::c_void;
@@ -99,10 +100,8 @@ impl QuoteApi {
     pub fn register_fens_user_info(&self) -> Result<()> {
         let mut info = CThostFtdcFensUserInfoField::default();
         unsafe {
-            info.BrokerID
-                .clone_from_slice(std::mem::transmute(self.conf.broker_id.as_str()));
-            info.UserID
-                .clone_from_slice(std::mem::transmute(self.conf.user_id.as_str()));
+            info.BrokerID = self.conf.broker_id.into_array::<11>();
+            info.UserID = self.conf.user_id.into_array::<16>();
             info.LoginMode = self.conf.login_mode;
             Quote_RegisterFensUserInfo(self.api, &mut info);
         }
@@ -167,20 +166,20 @@ impl QuoteApi {
 
     pub fn login(&self) -> Result<()> {
         let mut info = <CThostFtdcReqUserLoginField as From<&Configuration>>::from(&self.conf);
-        unsafe {
+        match unsafe {
             let seq = self.seq.fetch_add(1, Ordering::SeqCst);
-            Quote_ReqUserLogin(self.api, &mut info, seq as i32);
+            Quote_ReqUserLogin(self.api, &mut info, seq as i32)
+        } {
+            0 => Ok(()),
+            ret => Err(anyhow!("Error({})", ret)),
         }
-        Ok(())
     }
 
     pub fn logout(&self) -> Result<()> {
         let mut info = CThostFtdcUserLogoutField::default();
         unsafe {
-            info.BrokerID
-                .copy_from_slice(std::mem::transmute(self.conf.broker_id.as_str()));
-            info.UserID
-                .copy_from_slice(std::mem::transmute(self.conf.user_id.as_str()));
+            info.BrokerID = self.conf.broker_id.into_array::<11>();
+            info.UserID = self.conf.user_id.into_array::<16>();
             let seq = self.seq.fetch_add(1, Ordering::SeqCst);
 
             Quote_ReqUserLogout(self.api, &mut info, seq as i32);
@@ -191,8 +190,7 @@ impl QuoteApi {
     pub fn query_multicast_instrument(&self, symbol: &str, topic_id: i32) -> Result<()> {
         let mut info = CThostFtdcQryMulticastInstrumentField::default();
         unsafe {
-            info.InstrumentID
-                .clone_from_slice(std::mem::transmute(symbol));
+            info.InstrumentID = symbol.into_array::<81>();
             info.TopicID = topic_id;
             let seq = self.seq.fetch_add(1, Ordering::SeqCst);
             Quote_ReqQryMulticastInstrument(self.api, &mut info, seq as i32);
@@ -201,7 +199,7 @@ impl QuoteApi {
     }
 }
 
-pub trait QuoteSpi {
+pub trait QuoteSpi: Send {
     ///当客户端与交易后台建立起通信连接时（还未登录前），该方法被调用。
     fn on_connected(&self) {
         log::debug!("on_connected");
@@ -227,7 +225,12 @@ pub trait QuoteSpi {
     }
     ///登录请求响应
     fn on_login(&self, info: &CThostFtdcRspUserLoginField, result: &Response) {
-        log::debug!("on_login info {:?} result {:?}", info, result);
+        log::debug!(
+            "on_login tradingday {} {:?} {:?}",
+            String::from_c_buf(&info.TradingDay),
+            info,
+            result
+        );
     }
     ///登出请求响应
     fn on_logout(&self, info: &CThostFtdcUserLogoutField, result: &Response) {
@@ -247,6 +250,7 @@ pub trait QuoteSpi {
     }
     ///订阅行情应答
     fn on_sub_market_data(&self, info: &CThostFtdcSpecificInstrumentField, result: &Response) {
+        println!("reserve1:{}", String::from_c_buf(&info.reserve1),);
         log::debug!("on_sub_market_data info {:?} result {:?}", info, result);
     }
     ///取消订阅行情应答
@@ -255,6 +259,7 @@ pub trait QuoteSpi {
     }
     ///订阅询价应答
     fn on_sub_for_quote(&self, info: &CThostFtdcSpecificInstrumentField, result: &Response) {
+        println!("reserve1:{}", String::from_c_buf(&info.reserve1));
         log::debug!("on_sub_for_quote info {:?} result {:?}", info, result);
     }
 

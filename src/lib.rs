@@ -2,12 +2,13 @@ pub mod ffi;
 pub mod quote;
 pub mod trade;
 
+use encoding::all::GBK;
+use encoding::{DecoderTrap, EncoderTrap, Encoding};
 pub use ffi::*;
 use libc::c_char;
 pub use quote::*;
 use std::ffi::CStr;
 pub use trade::*;
-
 #[doc = "配置信息"]
 #[derive(Default, Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Configuration {
@@ -108,7 +109,8 @@ impl<'a> FromCBuf<'a> for String {
             Some(pos) => &b[..pos],
             None => b,
         };
-        unsafe { String::from_utf8_unchecked(slice.to_vec()) }
+        GBK.decode(slice, DecoderTrap::Strict).unwrap()
+        // unsafe { String::from_utf8_unchecked(slice.to_vec()) }
     }
 }
 
@@ -163,6 +165,38 @@ impl ToCBuf for String {
     }
 }
 
+pub trait ToArray {
+    fn into_array<const N: usize>(&self) -> [c_char; N];
+}
+
+impl ToArray for String {
+    fn into_array<const N: usize>(&self) -> [c_char; N] {
+        let mut sarr = [0i8; N];
+
+        for (i, &b) in self.as_bytes().iter().enumerate() {
+            if i >= N {
+                break;
+            }
+            sarr[i] = b as i8;
+        }
+        sarr
+    }
+}
+
+impl ToArray for &str {
+    fn into_array<const N: usize>(&self) -> [c_char; N] {
+        let mut sarr = [0i8; N];
+
+        for (i, &b) in self.as_bytes().iter().enumerate() {
+            if i >= N {
+                break;
+            }
+            sarr[i] = b as i8;
+        }
+        sarr
+    }
+}
+
 #[doc = "接口应答"]
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Response {
@@ -197,31 +231,14 @@ impl<'a> From<&'a CThostFtdcRspInfoField> for Response {
 impl<'a> From<&'a Configuration> for CThostFtdcUserSystemInfoField {
     fn from(r: &'a Configuration) -> CThostFtdcUserSystemInfoField {
         let mut field = CThostFtdcUserSystemInfoField::default();
-        unsafe {
-            field
-                .BrokerID
-                .clone_from_slice(std::mem::transmute(r.broker_id.as_str()));
-            field
-                .UserID
-                .clone_from_slice(std::mem::transmute(r.user_id.as_str()));
-            field
-                .ClientSystemInfo
-                .clone_from_slice(std::mem::transmute(r.system_info.as_str()));
-            field.ClientSystemInfoLen = r.system_info.as_bytes().len() as i32;
-            field.ClientIPPort = r.port;
-            field
-                .ClientLoginTime
-                .clone_from_slice(std::mem::transmute(r.login_time.as_str()));
-            field
-                .ClientAppID
-                .clone_from_slice(std::mem::transmute(r.appid.as_str()));
-            field
-                .ClientPublicIP
-                .clone_from_slice(std::mem::transmute(r.public_ip.as_str()));
-            field
-                .ClientLoginRemark
-                .clone_from_slice(std::mem::transmute(r.login_remark.as_str()));
-        }
+        field.BrokerID = r.broker_id.into_array::<11>();
+        field.UserID = r.user_id.into_array::<16>();
+        field.ClientSystemInfo = r.system_info.into_array::<273>();
+        field.ClientIPPort = r.port;
+        field.ClientLoginTime = r.login_time.into_array::<9>();
+        field.ClientAppID = r.appid.into_array::<33>();
+        field.ClientPublicIP = r.public_ip.into_array::<33>();
+        field.ClientLoginRemark = r.login_remark.into_array::<151>();
         field
     }
 }
@@ -229,40 +246,17 @@ impl<'a> From<&'a Configuration> for CThostFtdcUserSystemInfoField {
 impl<'a> From<&'a Configuration> for CThostFtdcReqUserLoginField {
     fn from(r: &'a Configuration) -> CThostFtdcReqUserLoginField {
         let mut field = CThostFtdcReqUserLoginField::default();
-        unsafe {
-            field
-                .BrokerID
-                .clone_from_slice(std::mem::transmute(r.broker_id.as_str()));
-            field
-                .UserID
-                .clone_from_slice(std::mem::transmute(r.user_id.as_str()));
-            field
-                .Password
-                .clone_from_slice(std::mem::transmute(r.passwd.as_str()));
-
-            field.ClientIPPort = r.port;
-            field
-                .UserProductInfo
-                .clone_from_slice(std::mem::transmute(r.user_product_info.as_str()));
-            field
-                .InterfaceProductInfo
-                .clone_from_slice(std::mem::transmute(r.interface_product_info.as_str()));
-            field
-                .ProtocolInfo
-                .clone_from_slice(std::mem::transmute(r.protocol_info.as_str()));
-            field
-                .MacAddress
-                .clone_from_slice(std::mem::transmute(r.mac_addr.as_str()));
-            field
-                .OneTimePassword
-                .clone_from_slice(std::mem::transmute(r.one_time_passwd.as_str()));
-            field
-                .LoginRemark
-                .clone_from_slice(std::mem::transmute(r.login_remark.as_str()));
-            field
-                .ClientIPAddress
-                .clone_from_slice(std::mem::transmute(r.ip_addr.as_str()));
-        }
+        field.BrokerID = r.broker_id.into_array::<11>();
+        field.UserID = r.user_id.into_array::<16>();
+        field.Password = r.passwd.into_array::<41>();
+        field.ClientIPPort = r.port;
+        field.UserProductInfo = r.user_product_info.into_array::<11>();
+        field.InterfaceProductInfo = r.interface_product_info.into_array::<11>();
+        field.ProtocolInfo = r.protocol_info.into_array::<11>();
+        field.MacAddress = r.mac_addr.into_array::<21>();
+        field.OneTimePassword = r.one_time_passwd.into_array::<41>();
+        field.LoginRemark = r.login_remark.into_array::<36>();
+        field.ClientIPAddress = r.ip_addr.into_array::<33>();
         field
     }
 }
