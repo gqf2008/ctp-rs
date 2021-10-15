@@ -25,10 +25,14 @@ struct Opt {
         default_value = "tcp://180.168.146.187:10201"
     )]
     trade_addr: String,
-    #[structopt(name = "passwd", short, long)]
-    passwd: String,
-    #[structopt(name = "new_passwd", short, long)]
-    new_passwd: String,
+    #[structopt(name = "login_passwd", short, long)]
+    login_passwd: String,
+    #[structopt(name = "trade_passwd", short, long)]
+    trade_passwd: String,
+    #[structopt(name = "new_login_passwd", short, long)]
+    new_login_passwd: String,
+    #[structopt(name = "new_trade_passwd", short, long)]
+    new_trade_passwd: String,
     /// Output file
     #[structopt(long, parse(from_os_str), default_value = "./")]
     tpath: PathBuf,
@@ -45,7 +49,7 @@ fn main() -> Result<()> {
             appid: opt.appid,
             auth_code: opt.auth_code,
             front_addr: opt.trade_addr,
-            passwd: opt.passwd.clone(),
+            passwd: opt.login_passwd.clone(),
             ..Default::default()
         });
     tapi.register_front()?;
@@ -55,9 +59,14 @@ fn main() -> Result<()> {
     std::thread::sleep(std::time::Duration::from_secs(1));
     if let Err(err) = tapi.login() {
         log::error!("{}", err);
-        tapi.update_passwd(opt.passwd.as_str())?;
+        tapi.update_passwd(opt.new_login_passwd.as_str())?;
         std::thread::sleep(std::time::Duration::from_secs(1));
-        tapi.update_trade_account_passwd("ctp_dev_1", "cny", opt.passwd.as_str(), "gxh20110617")?;
+        tapi.update_trade_account_passwd(
+            "ctp_dev_1",
+            "cny",
+            opt.trade_passwd.as_str(),
+            opt.new_trade_passwd.as_str(),
+        )?;
     }
     std::thread::sleep(std::time::Duration::from_secs(3));
     Ok(())
