@@ -56,9 +56,10 @@ fn main() -> Result<()> {
     if let Err(err) = tapi.login() {
         log::error!("{}", err);
         tapi.update_passwd(opt.passwd.as_str())?;
+        std::thread::sleep(std::time::Duration::from_secs(1));
+        tapi.update_trade_account_passwd("ctp_dev_1", "cny", opt.passwd.as_str(), "gxh20110617")?;
     }
-    std::thread::sleep(std::time::Duration::from_secs(1));
-    tapi.update_passwd(opt.new_passwd.as_str())?;
+    std::thread::sleep(std::time::Duration::from_secs(3));
     Ok(())
 }
 
