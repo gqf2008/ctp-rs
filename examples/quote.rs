@@ -131,7 +131,15 @@ fn main() -> Result<()> {
             log::error!("{} {}", err, msg);
         }
         Event::Disconnected(reason) => {
-            log::error!("{}", reason);
+            let str = match reason {
+                0x1001=>"网络读失败",
+                0x1002=>"网络写失败",
+                0x2001=>"接收心跳超时",
+                0x2002=>"发送心跳失败",
+                0x2003=>"收到错误报文",
+                _=>"未知错误",
+            };
+            log::error!("0x{:#04x} {}", reason,str);
         }
         _ => {
             log::debug!("{:?}", ev);

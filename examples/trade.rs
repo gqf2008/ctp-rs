@@ -66,6 +66,7 @@ fn main() -> Result<()> {
     tapi.register_fens_user_info()?;
     tapi.register_spi(MyTradeSpi)?;
     tapi.init();
+    tapi.authenticate()?;
     std::thread::sleep(std::time::Duration::from_secs(1));
     loop {
         if let Err(err) = tapi.login() {
@@ -75,8 +76,6 @@ fn main() -> Result<()> {
             break;
         }
     }
-    tapi.authenticate()?;
-    std::thread::sleep(std::time::Duration::from_secs(1));
     tapi.subscribe_public_topic(ResumeType::THOST_TERT_RESTART)?;
     tapi.subscribe_private_topic(ResumeType::THOST_TERT_RESTART)?;
     tapi.wait()
