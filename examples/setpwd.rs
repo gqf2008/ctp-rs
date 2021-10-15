@@ -27,12 +27,12 @@ struct Opt {
     trade_addr: String,
     #[structopt(name = "login_passwd", long)]
     login_passwd: String,
-    #[structopt(name = "trade_passwd", long)]
-    trade_passwd: String,
+    // #[structopt(name = "trade_passwd", long)]
+    // trade_passwd: String,
     #[structopt(name = "new_login_passwd", long)]
     new_login_passwd: String,
-    #[structopt(name = "new_trade_passwd", long)]
-    new_trade_passwd: String,
+    // #[structopt(name = "new_trade_passwd", long)]
+    // new_trade_passwd: String,
     /// Output file
     #[structopt(long, parse(from_os_str), default_value = "./")]
     tpath: PathBuf,
