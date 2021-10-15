@@ -61,8 +61,7 @@ fn main() -> Result<()> {
     tapi.register_spi(MyTradeSpi)?;
     tapi.init();
     std::thread::sleep(std::time::Duration::from_secs(1));
-    if let Err(err) = tapi.login() {
-        log::error!("{}", err);
+    if let Ok(()) = tapi.login() {
         tapi.update_passwd(opt.new_login_passwd.as_str())?;
         std::thread::sleep(std::time::Duration::from_secs(1));
         tapi.update_trade_account_passwd(
