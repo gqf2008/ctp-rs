@@ -5,6 +5,14 @@ use ctp_rs::{ffi::*, Configuration, FromCBuf, QuoteApi, QuoteSpi, Response, Trad
 use std::path::PathBuf;
 use structopt::StructOpt;
 
+fn true_or_false(s: &str) -> Result<bool, &'static str> {
+    match s {
+        "true" => Ok(true),
+        "false" => Ok(false),
+        _ => Err("expected `true` or `false`"),
+    }
+}
+
 /// A basic example
 #[derive(StructOpt, Debug)]
 #[structopt(name = "basic")]
@@ -26,9 +34,9 @@ struct Opt {
     /// Output file
     #[structopt(long, parse(from_os_str), default_value = "./")]
     qpath: PathBuf,
-    #[structopt(long, default_value = false)]
+    #[structopt(long, parse(try_from_str), default_value = "false")]
     udp: bool,
-    #[structopt(long, default_value = false)]
+    #[structopt(long, parse(try_from_str), default_value = "false")]
     multicast: bool,
 }
 
