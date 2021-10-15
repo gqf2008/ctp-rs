@@ -19,16 +19,20 @@ fn true_or_false(s: &str) -> Result<bool, &'static str> {
 struct Opt {
     #[structopt(long, default_value = "DEBUG")]
     level: String,
-    #[structopt(long, default_value = "9999")]
+    #[structopt(name = "broker_id", long, default_value = "9999")]
     broker_id: String,
-    #[structopt(short, long)]
+    #[structopt(name = "user_id", short, long)]
     user_id: String,
     #[structopt(long, default_value = "simnow_client_test")]
     appid: String,
     #[structopt(long, default_value = "0000000000000000")]
     auth_code: String,
-    #[structopt(long, default_value = "tcp://180.168.146.187:10131")]
-    front_addr: String,
+    #[structopt(
+        name = "quote_addr",
+        long,
+        default_value = "tcp://180.168.146.187:10131"
+    )]
+    quote_addr: String,
     #[structopt(short, long)]
     passwd: String,
     /// Output file
@@ -57,7 +61,7 @@ fn main() -> Result<()> {
             user_id: opt.user_id,
             appid: opt.appid,
             auth_code: opt.auth_code,
-            front_addr: opt.front_addr,
+            front_addr: opt.quote_addr,
             passwd: opt.passwd,
             ..Default::default()
         });
