@@ -41,9 +41,9 @@ fn main() {
         .expect("Couldn't write bindings!");
 }
 
-#[cfg(any(not(target_os = "linux"), not(target_os = "windows")))]
+#[cfg(target_os = "macos")]
 fn add_search_path() {
-    unimplemented!("Not support for your os")
+    unimplemented!("Not support for macos")
 }
 
 #[cfg(target_os = "linux")]
