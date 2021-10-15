@@ -1,6 +1,6 @@
 mod stub_ffi;
 
-use super::{Configuration, Response};
+use super::{Configuration, Response, ToArray};
 
 use crate::ffi::*;
 use anyhow::anyhow;
@@ -91,10 +91,8 @@ impl TradeApi {
     pub fn register_fens_user_info(&self) -> Result<()> {
         let mut info = CThostFtdcFensUserInfoField::default();
         unsafe {
-            info.BrokerID
-                .clone_from_slice(std::mem::transmute(self.conf.broker_id.as_str()));
-            info.UserID
-                .clone_from_slice(std::mem::transmute(self.conf.user_id.as_str()));
+            info.BrokerID = self.conf.broker_id.into_array::<11>();
+            info.UserID = self.conf.user_id.into_array::<16>();
             info.LoginMode = self.conf.login_mode;
             Trade_RegisterFensUserInfo(self.api, &mut info);
         }
@@ -129,10 +127,8 @@ impl TradeApi {
     pub fn authenticate(&self) -> Result<()> {
         let mut auth = CThostFtdcReqAuthenticateField::default();
         unsafe {
-            auth.BrokerID
-                .clone_from_slice(std::mem::transmute(self.conf.broker_id.as_str()));
-            auth.UserID
-                .clone_from_slice(std::mem::transmute(self.conf.user_id.as_str()));
+            auth.BrokerID = self.conf.broker_id.into_array::<11>();
+            auth.UserID = self.conf.user_id.into_array::<16>();
             auth.UserProductInfo
                 .clone_from_slice(std::mem::transmute(self.conf.user_product_info.as_str()));
             auth.AuthCode

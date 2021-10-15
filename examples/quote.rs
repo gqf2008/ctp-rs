@@ -30,9 +30,15 @@ struct Opt {
     #[structopt(
         name = "quote_addr",
         long,
-        default_value = "tcp://180.168.146.187:10131"
+        default_value = "tcp://180.168.146.187:10211"
     )]
     quote_addr: String,
+    #[structopt(
+        name = "trade_addr",
+        long,
+        default_value = "tcp://180.168.146.187:10201"
+    )]
+    trade_addr: String,
     #[structopt(short, long)]
     passwd: String,
     /// Output file
@@ -68,6 +74,7 @@ fn main() -> Result<()> {
     qapi.register_front()?;
     qapi.register_fens_user_info()?;
     qapi.register_spi(Myquote(tx));
+
     qapi.init();
     loop {
         rx.iter().for_each(|ev| match ev {
@@ -181,12 +188,6 @@ impl QuoteSpi for Myquote {
     }
     ///登录请求响应
     fn on_login(&self, info: &CThostFtdcRspUserLoginField, result: &Response) {
-        log::debug!(
-            "tradingday {} {:?} result {:?}",
-            String::from_c_buf(&info.TradingDay),
-            info,
-            result
-        );
         if result.code != 0 {
             self.0
                 .send(Event::Error(result.code, result.message.clone()))

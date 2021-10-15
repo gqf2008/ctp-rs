@@ -277,40 +277,18 @@ impl<'a> From<&'a Configuration> for CThostFtdcReqUserLoginField {
 impl<'a> From<&'a Configuration> for CThostFtdcReqUserLoginWithCaptchaField {
     fn from(r: &'a Configuration) -> CThostFtdcReqUserLoginWithCaptchaField {
         let mut field = CThostFtdcReqUserLoginWithCaptchaField::default();
-        unsafe {
-            field
-                .BrokerID
-                .clone_from_slice(std::mem::transmute(r.broker_id.as_str()));
-            field
-                .UserID
-                .clone_from_slice(std::mem::transmute(r.user_id.as_str()));
-            field
-                .Password
-                .clone_from_slice(std::mem::transmute(r.passwd.as_str()));
+        field.BrokerID = r.broker_id.into_array::<11>();
+        field.UserID = r.user_id.into_array::<16>();
+        field.Password = r.passwd.into_array::<41>();
+        field.ClientIPPort = r.port;
+        field.UserProductInfo = r.user_product_info.into_array::<11>();
+        field.InterfaceProductInfo = r.interface_product_info.into_array::<11>();
+        field.ProtocolInfo = r.protocol_info.into_array::<11>();
+        field.MacAddress = r.mac_addr.into_array::<21>();
+        field.Captcha = r.captcha.into_array::<41>();
+        field.LoginRemark = r.login_remark.into_array::<36>();
+        field.ClientIPAddress = r.ip_addr.into_array::<33>();
 
-            field.ClientIPPort = r.port;
-            field
-                .UserProductInfo
-                .clone_from_slice(std::mem::transmute(r.user_product_info.as_str()));
-            field
-                .InterfaceProductInfo
-                .clone_from_slice(std::mem::transmute(r.interface_product_info.as_str()));
-            field
-                .ProtocolInfo
-                .clone_from_slice(std::mem::transmute(r.protocol_info.as_str()));
-            field
-                .MacAddress
-                .clone_from_slice(std::mem::transmute(r.mac_addr.as_str()));
-            field
-                .Captcha
-                .clone_from_slice(std::mem::transmute(r.captcha.as_str()));
-            field
-                .LoginRemark
-                .clone_from_slice(std::mem::transmute(r.login_remark.as_str()));
-            field
-                .ClientIPAddress
-                .clone_from_slice(std::mem::transmute(r.ip_addr.as_str()));
-        }
         field
     }
 }
@@ -318,40 +296,17 @@ impl<'a> From<&'a Configuration> for CThostFtdcReqUserLoginWithCaptchaField {
 impl<'a> From<&'a Configuration> for CThostFtdcReqUserLoginWithTextField {
     fn from(r: &'a Configuration) -> CThostFtdcReqUserLoginWithTextField {
         let mut field = CThostFtdcReqUserLoginWithTextField::default();
-        unsafe {
-            field
-                .BrokerID
-                .clone_from_slice(std::mem::transmute(r.broker_id.as_str()));
-            field
-                .UserID
-                .clone_from_slice(std::mem::transmute(r.user_id.as_str()));
-            field
-                .Password
-                .clone_from_slice(std::mem::transmute(r.passwd.as_str()));
-
-            field.ClientIPPort = r.port;
-            field
-                .UserProductInfo
-                .clone_from_slice(std::mem::transmute(r.user_product_info.as_str()));
-            field
-                .InterfaceProductInfo
-                .clone_from_slice(std::mem::transmute(r.interface_product_info.as_str()));
-            field
-                .ProtocolInfo
-                .clone_from_slice(std::mem::transmute(r.protocol_info.as_str()));
-            field
-                .MacAddress
-                .clone_from_slice(std::mem::transmute(r.mac_addr.as_str()));
-            field
-                .Text
-                .clone_from_slice(std::mem::transmute(r.text.as_str()));
-            field
-                .LoginRemark
-                .clone_from_slice(std::mem::transmute(r.login_remark.as_str()));
-            field
-                .ClientIPAddress
-                .clone_from_slice(std::mem::transmute(r.ip_addr.as_str()));
-        }
+        field.BrokerID = r.broker_id.into_array::<11>();
+        field.UserID = r.user_id.into_array::<16>();
+        field.Password = r.passwd.into_array::<41>();
+        field.ClientIPPort = r.port;
+        field.UserProductInfo = r.user_product_info.into_array::<11>();
+        field.InterfaceProductInfo = r.interface_product_info.into_array::<11>();
+        field.ProtocolInfo = r.protocol_info.into_array::<11>();
+        field.MacAddress = r.mac_addr.into_array::<21>();
+        field.Text = r.text.into_array::<41>();
+        field.LoginRemark = r.login_remark.into_array::<36>();
+        field.ClientIPAddress = r.ip_addr.into_array::<33>();
         field
     }
 }
@@ -359,40 +314,17 @@ impl<'a> From<&'a Configuration> for CThostFtdcReqUserLoginWithTextField {
 impl<'a> From<&'a Configuration> for CThostFtdcReqUserLoginWithOTPField {
     fn from(r: &'a Configuration) -> CThostFtdcReqUserLoginWithOTPField {
         let mut field = CThostFtdcReqUserLoginWithOTPField::default();
-        unsafe {
-            field
-                .BrokerID
-                .clone_from_slice(std::mem::transmute(r.broker_id.as_str()));
-            field
-                .UserID
-                .clone_from_slice(std::mem::transmute(r.user_id.as_str()));
-            field
-                .Password
-                .clone_from_slice(std::mem::transmute(r.passwd.as_str()));
-
-            field.ClientIPPort = r.port;
-            field
-                .UserProductInfo
-                .clone_from_slice(std::mem::transmute(r.user_product_info.as_str()));
-            field
-                .InterfaceProductInfo
-                .clone_from_slice(std::mem::transmute(r.interface_product_info.as_str()));
-            field
-                .ProtocolInfo
-                .clone_from_slice(std::mem::transmute(r.protocol_info.as_str()));
-            field
-                .MacAddress
-                .clone_from_slice(std::mem::transmute(r.mac_addr.as_str()));
-            field
-                .OTPPassword
-                .clone_from_slice(std::mem::transmute(r.otp_passwd.as_str()));
-            field
-                .LoginRemark
-                .clone_from_slice(std::mem::transmute(r.login_remark.as_str()));
-            field
-                .ClientIPAddress
-                .clone_from_slice(std::mem::transmute(r.ip_addr.as_str()));
-        }
+        field.BrokerID = r.broker_id.into_array::<11>();
+        field.UserID = r.user_id.into_array::<16>();
+        field.Password = r.passwd.into_array::<41>();
+        field.ClientIPPort = r.port;
+        field.UserProductInfo = r.user_product_info.into_array::<11>();
+        field.InterfaceProductInfo = r.interface_product_info.into_array::<11>();
+        field.ProtocolInfo = r.protocol_info.into_array::<11>();
+        field.MacAddress = r.mac_addr.into_array::<21>();
+        field.OTPPassword = r.otp_passwd.into_array::<41>();
+        field.LoginRemark = r.login_remark.into_array::<36>();
+        field.ClientIPAddress = r.ip_addr.into_array::<33>();
         field
     }
 }

@@ -42,9 +42,7 @@ fn main() {
 }
 
 #[cfg(target_os = "macos")]
-fn add_search_path() {
-    unimplemented!("Not support for macos")
-}
+fn add_search_path() {}
 
 #[cfg(target_os = "linux")]
 fn add_search_path() {
