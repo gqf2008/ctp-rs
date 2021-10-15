@@ -159,7 +159,7 @@ impl TradeApi {
             Trade_ReqUserLogin(self.api, &mut info, seq as i32)
         } {
             0 => Ok(()),
-            ret => Err(anyhow!("{}", ret)),
+            ret => Err(anyhow!("logine error {}", ret)),
         }
     }
 
