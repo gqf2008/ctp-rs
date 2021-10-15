@@ -41,7 +41,11 @@ struct Opt {
 //https://www.simnow.com.cn/product.action
 fn main() -> Result<()> {
     let opt = Opt::from_args();
-    println!("trade.api {}", TradeApi::version()?);
+    let env = env_logger::Env::default()
+        .filter_or("MY_LOG_LEVEL", opt.level.as_str())
+        .write_style_or("MY_LOG_STYLE", "always");
+    env_logger::init_from_env(env);
+    log::info!("trade.api {}", TradeApi::version()?);
     let mut tapi =
         TradeApi::new(opt.tpath.to_str().unwrap_or("./"))?.with_configuration(Configuration {
             broker_id: opt.broker_id,
@@ -69,7 +73,7 @@ fn main() -> Result<()> {
         )?;
     }
     std::thread::sleep(std::time::Duration::from_secs(3));
-    Ok(())
+    tapi.wait()
 }
 
 #[derive(Debug, Clone)]
@@ -78,10 +82,17 @@ struct MyTradeSpi;
 impl TradeSpi for MyTradeSpi {
     ///登录请求响应
     fn on_user_login(&self, info: &CThostFtdcRspUserLoginField, result: &Response) {
-        println!("{:?} {:?}", info, result);
+        log::info!("{:?} {:?}", info, result);
     }
 
     fn on_user_password_update(&self, info: &CThostFtdcUserPasswordUpdateField, result: &Response) {
-        println!("info {:?} result {:?}", info, result);
+        log::info!("info {:?} result {:?}", info, result);
+    }
+    fn on_trading_account_password_update(
+        &self,
+        info: &CThostFtdcTradingAccountPasswordUpdateField,
+        result: &Response,
+    ) {
+        log::info!("info {:?} result {:?}", info, result);
     }
 }
