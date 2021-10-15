@@ -5,14 +5,6 @@ use ctp_rs::{ffi::*, Configuration, FromCBuf, Response, TradeApi, TradeSpi};
 use std::path::PathBuf;
 use structopt::StructOpt;
 
-fn true_or_false(s: &str) -> Result<bool, &'static str> {
-    match s {
-        "true" => Ok(true),
-        "false" => Ok(false),
-        _ => Err("expected `true` or `false`"),
-    }
-}
-
 /// A basic example
 #[derive(StructOpt, Debug)]
 #[structopt(name = "basic")]
@@ -39,7 +31,7 @@ struct Opt {
     new_passwd: String,
     /// Output file
     #[structopt(long, parse(from_os_str), default_value = "./")]
-    qpath: PathBuf,
+    tpath: PathBuf,
 }
 
 //https://www.simnow.com.cn/product.action
@@ -47,7 +39,7 @@ fn main() -> Result<()> {
     let opt = Opt::from_args();
     println!("trade.api {}", TradeApi::version()?);
     let mut tapi =
-        TradeApi::new(opt.qpath.to_str().unwrap_or("./"))?.with_configuration(Configuration {
+        TradeApi::new(opt.tpath.to_str().unwrap_or("./"))?.with_configuration(Configuration {
             broker_id: opt.broker_id,
             user_id: opt.user_id,
             appid: opt.appid,

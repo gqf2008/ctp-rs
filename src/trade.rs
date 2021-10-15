@@ -129,12 +129,9 @@ impl TradeApi {
         unsafe {
             auth.BrokerID = self.conf.broker_id.into_array::<11>();
             auth.UserID = self.conf.user_id.into_array::<16>();
-            auth.UserProductInfo
-                .clone_from_slice(std::mem::transmute(self.conf.user_product_info.as_str()));
-            auth.AuthCode
-                .clone_from_slice(std::mem::transmute(self.conf.auth_code.as_str()));
-            auth.AppID
-                .clone_from_slice(std::mem::transmute(self.conf.appid.as_str()));
+            auth.UserProductInfo = self.conf.user_product_info.into_array::<11>();
+            auth.AuthCode = self.conf.auth_code.into_array::<17>();
+            auth.AppID = self.conf.appid.into_array::<33>();
             let seq = self.seq.fetch_add(1, Ordering::SeqCst);
             Trade_ReqAuthenticate(self.api, &mut auth, seq as i32);
         }
@@ -167,10 +164,8 @@ impl TradeApi {
     pub fn logout(&self) -> Result<()> {
         let mut info = CThostFtdcUserLogoutField::default();
         unsafe {
-            info.BrokerID
-                .copy_from_slice(std::mem::transmute(self.conf.broker_id.as_str()));
-            info.UserID
-                .copy_from_slice(std::mem::transmute(self.conf.user_id.as_str()));
+            info.BrokerID = self.conf.broker_id.into_array::<11>();
+            info.UserID = self.conf.user_id.into_array::<16>();
             let seq = self.seq.fetch_add(1, Ordering::SeqCst);
             Trade_ReqUserLogout(self.api, &mut info, seq as i32);
         }
@@ -180,14 +175,10 @@ impl TradeApi {
     pub fn update_passwd(&self, new_passwd: &str) -> Result<()> {
         let mut info = CThostFtdcUserPasswordUpdateField::default();
         unsafe {
-            info.BrokerID
-                .copy_from_slice(std::mem::transmute(self.conf.broker_id.as_str()));
-            info.UserID
-                .copy_from_slice(std::mem::transmute(self.conf.user_id.as_str()));
-            info.OldPassword
-                .copy_from_slice(std::mem::transmute(self.conf.passwd.as_str()));
-            info.NewPassword
-                .copy_from_slice(std::mem::transmute(new_passwd));
+            info.BrokerID = self.conf.broker_id.into_array::<11>();
+            info.UserID = self.conf.user_id.into_array::<16>();
+            info.OldPassword = self.conf.passwd.into_array::<41>();
+            info.NewPassword = new_passwd.into_array::<41>();
             let seq = self.seq.fetch_add(1, Ordering::SeqCst);
             Trade_ReqUserPasswordUpdate(self.api, &mut info, seq as i32);
         }
@@ -203,15 +194,12 @@ impl TradeApi {
     ) -> Result<()> {
         let mut info = CThostFtdcTradingAccountPasswordUpdateField::default();
         unsafe {
-            info.BrokerID
-                .copy_from_slice(std::mem::transmute(self.conf.broker_id.as_str()));
-            info.AccountID
-                .copy_from_slice(std::mem::transmute(account_id));
-            info.CurrencyID.copy_from_slice(std::mem::transmute(cny_id));
-            info.OldPassword
-                .copy_from_slice(std::mem::transmute(old_passwd));
-            info.NewPassword
-                .copy_from_slice(std::mem::transmute(new_passwd));
+            info.BrokerID = self.conf.broker_id.into_array::<11>();
+            info.AccountID = account_id.into_array::<13>();
+            info.CurrencyID = cny_id.into_array::<4>();
+            info.OldPassword = old_passwd.into_array::<41>();
+            info.NewPassword = new_passwd.into_array::<41>();
+
             let seq = self.seq.fetch_add(1, Ordering::SeqCst);
             Trade_ReqTradingAccountPasswordUpdate(self.api, &mut info, seq as i32);
         }
@@ -220,13 +208,9 @@ impl TradeApi {
     pub fn auth_method(&self, trading_day: &str) -> Result<()> {
         let mut info = CThostFtdcReqUserAuthMethodField::default();
         unsafe {
-            info.BrokerID
-                .copy_from_slice(std::mem::transmute(self.conf.broker_id.as_str()));
-            info.UserID
-                .copy_from_slice(std::mem::transmute(self.conf.user_id.as_str()));
-            info.TradingDay
-                .copy_from_slice(std::mem::transmute(trading_day));
-
+            info.BrokerID = self.conf.broker_id.into_array::<11>();
+            info.UserID = self.conf.user_id.into_array::<16>();
+            info.TradingDay = trading_day.into_array::<9>();
             let seq = self.seq.fetch_add(1, Ordering::SeqCst);
             Trade_ReqUserAuthMethod(self.api, &mut info, seq as i32);
         }
@@ -235,13 +219,9 @@ impl TradeApi {
     pub fn gen_user_captcha(&self, trading_day: &str) -> Result<()> {
         let mut info = CThostFtdcReqGenUserCaptchaField::default();
         unsafe {
-            info.BrokerID
-                .copy_from_slice(std::mem::transmute(self.conf.broker_id.as_str()));
-            info.UserID
-                .copy_from_slice(std::mem::transmute(self.conf.user_id.as_str()));
-            info.TradingDay
-                .copy_from_slice(std::mem::transmute(trading_day));
-
+            info.BrokerID = self.conf.broker_id.into_array::<11>();
+            info.UserID = self.conf.user_id.into_array::<16>();
+            info.TradingDay = trading_day.into_array::<9>();
             let seq = self.seq.fetch_add(1, Ordering::SeqCst);
             Trade_ReqGenUserCaptcha(self.api, &mut info, seq as i32);
         }
@@ -251,13 +231,9 @@ impl TradeApi {
     pub fn gen_user_text(&self, trading_day: &str) -> Result<()> {
         let mut info = CThostFtdcReqGenUserTextField::default();
         unsafe {
-            info.BrokerID
-                .copy_from_slice(std::mem::transmute(self.conf.broker_id.as_str()));
-            info.UserID
-                .copy_from_slice(std::mem::transmute(self.conf.user_id.as_str()));
-            info.TradingDay
-                .copy_from_slice(std::mem::transmute(trading_day));
-
+            info.BrokerID = self.conf.broker_id.into_array::<11>();
+            info.UserID = self.conf.user_id.into_array::<16>();
+            info.TradingDay = trading_day.into_array::<9>();
             let seq = self.seq.fetch_add(1, Ordering::SeqCst);
             Trade_ReqGenUserText(self.api, &mut info, seq as i32);
         }
