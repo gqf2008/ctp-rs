@@ -1,6 +1,7 @@
 use anyhow::Result;
 
-use ctp_rs::{ffi::*, Configuration, Response, ResumeType, TradeApi, TradeSpi};
+use ctp_rs::{ffi::*, Configuration, FromCBuf, Response, ResumeType, TradeApi, TradeSpi};
+use std::io::Write;
 use std::path::PathBuf;
 use structopt::StructOpt;
 
@@ -19,15 +20,9 @@ struct Opt {
     #[structopt(long, default_value = "0000000000000000")]
     auth_code: String,
     #[structopt(
-        name = "quote_addr",
-        long,
-        default_value = "tcp://180.168.146.187:10211"
-    )]
-    quote_addr: String,
-    #[structopt(
         name = "trade_addr",
         long,
-        default_value = "tcp://180.168.146.187:10201"
+        default_value = "tcp://180.168.146.187:10130"
     )]
     trade_addr: String,
     #[structopt(short, long)]
@@ -50,7 +45,19 @@ fn main() -> Result<()> {
     let env = env_logger::Env::default()
         .filter_or("MY_LOG_LEVEL", qopt.level.as_str())
         .write_style_or("MY_LOG_STYLE", "always");
-    env_logger::init_from_env(env);
+    env_logger::Builder::from_env(env)
+        .format(|buf, record| {
+            writeln!(
+                buf,
+                "{} {}:{} [{}] - {}",
+                chrono::Local::now().format("%Y-%m-%dT%H:%M:%S"),
+                record.file().unwrap_or("unknown"),
+                record.line().unwrap_or(0),
+                record.level(),
+                record.args()
+            )
+        })
+        .init();
     log::info!("trade.api {}", TradeApi::version()?);
     let mut tapi =
         TradeApi::new(opt.tpath.to_str().unwrap_or("./"))?.with_configuration(Configuration {
@@ -87,10 +94,33 @@ struct MyTradeSpi;
 impl TradeSpi for MyTradeSpi {
     ///登录请求响应
     fn on_user_login(&self, info: &CThostFtdcRspUserLoginField, result: &Response) {
-        log::debug!("{:?} {:?}", info, result);
+        log::info!(
+            "TradingDay:{}, LoginTime:{}, BrokerID:{}, UserID:{}, SystemName:{}, FrontID:{}, SessionID:{}, MaxOrderRef:{} {} {}",
+            String::from_c_buf(&info.TradingDay),
+            String::from_c_buf(&info.LoginTime),
+            String::from_c_buf(&info.BrokerID),
+            String::from_c_buf(&info.UserID),
+            String::from_c_buf(&info.SystemName),
+            info.FrontID,
+            info.SessionID,
+            String::from_c_buf(&info.MaxOrderRef),
+            result.code,
+            result.message,
+        );
     }
 
     fn on_user_password_update(&self, info: &CThostFtdcUserPasswordUpdateField, result: &Response) {
         log::debug!("info {:?} result {:?}", info, result);
+    }
+    ///合约交易状态通知
+    fn on_rtn_instrument_status(&self, info: &CThostFtdcInstrumentStatusField) {
+        log::info!(
+            "Exchange:{}, Instrument:{},SettlementGroup:{}, EnterTime:{}, ExchangeInstID:{}",
+            String::from_c_buf(&info.ExchangeID),
+            String::from_c_buf(&info.InstrumentID),
+            String::from_c_buf(&info.SettlementGroupID),
+            String::from_c_buf(&info.EnterTime),
+            String::from_c_buf(&info.ExchangeInstID)
+        );
     }
 }

@@ -2,6 +2,7 @@ use anyhow::Result;
 
 use crossbeam::channel::{self, Sender};
 use ctp_rs::{ffi::*, Configuration, FromCBuf, QuoteApi, QuoteSpi, Response};
+use std::io::Write;
 use std::path::PathBuf;
 use structopt::StructOpt;
 
@@ -22,15 +23,9 @@ struct Opt {
     #[structopt(
         name = "quote_addr",
         long,
-        default_value = "tcp://180.168.146.187:10211"
+        default_value = "tcp://180.168.146.187:10131"
     )]
     quote_addr: String,
-    #[structopt(
-        name = "trade_addr",
-        long,
-        default_value = "tcp://180.168.146.187:10201"
-    )]
-    trade_addr: String,
     #[structopt(short, long)]
     passwd: String,
     /// Output file
@@ -51,7 +46,19 @@ fn main() -> Result<()> {
     let env = env_logger::Env::default()
         .filter_or("MY_LOG_LEVEL", qopt.level.as_str())
         .write_style_or("MY_LOG_STYLE", "always");
-    env_logger::init_from_env(env);
+    env_logger::Builder::from_env(env)
+        .format(|buf, record| {
+            writeln!(
+                buf,
+                "{} {}:{} [{}] - {}",
+                chrono::Local::now().format("%Y-%m-%dT%H:%M:%S"),
+                record.file().unwrap_or("unknown"),
+                record.line().unwrap_or(0),
+                record.level(),
+                record.args()
+            )
+        })
+        .init();
     log::info!("quote.api {}", QuoteApi::version()?);
     let (tx, rx) = channel::bounded(256);
     let mtx = tx.clone();
@@ -116,8 +123,8 @@ fn main() -> Result<()> {
         }
         Event::Login(login) => {
             log::info!("trading day {} {:?}",String::from_c_buf(&login.TradingDay), login);
-            qapi.subscribe_market_data(&["ag2110", "ag2111"]).ok();
-            qapi.subscribe_for_quote(&["ag2110", "ag2111"]).ok();
+            qapi.subscribe_market_data(&["cu2111", "cu2112", "cu2201", "cu2202", "cu2203", "cu2204"]).ok();
+            qapi.subscribe_for_quote(&["cu2111", "cu2112", "cu2201", "cu2202", "cu2203", "cu2204"]).ok();
         }
         Event::Connected => {
             log::info!("connected ok");
