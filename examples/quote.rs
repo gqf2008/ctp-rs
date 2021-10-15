@@ -5,19 +5,11 @@ use ctp_rs::{ffi::*, Configuration, FromCBuf, QuoteApi, QuoteSpi, Response, Trad
 use std::path::PathBuf;
 use structopt::StructOpt;
 
-fn true_or_false(s: &str) -> Result<bool, &'static str> {
-    match s {
-        "true" => Ok(true),
-        "false" => Ok(false),
-        _ => Err("expected `true` or `false`"),
-    }
-}
-
 /// A basic example
 #[derive(StructOpt, Debug)]
 #[structopt(name = "basic")]
 struct Opt {
-    #[structopt(long, default_value = "DEBUG")]
+    #[structopt(long, default_value = "debug")]
     level: String,
     #[structopt(name = "broker_id", long, default_value = "9999")]
     broker_id: String,
@@ -74,7 +66,6 @@ fn main() -> Result<()> {
     qapi.register_front()?;
     qapi.register_fens_user_info()?;
     qapi.register_spi(Myquote(tx));
-
     qapi.init();
     loop {
         rx.iter().for_each(|ev| match ev {
@@ -122,11 +113,12 @@ fn main() -> Result<()> {
                 );
             }
             Event::Login(login) => {
-                log::info!("{:?}", login);
+                log::info!("trading day {} {:?}",String::from_c_buf(&login.TradingDay), login);
                 qapi.subscribe_market_data(&["ag2110", "ag2111"]).ok();
                 qapi.subscribe_for_quote(&["ag2110", "ag2111"]).ok();
             }
             Event::Connected => {
+                log::info!("connected ok");
                 if let Err(err) = qapi.login() {
                     log::error!("{}", err);
                     std::thread::sleep(std::time::Duration::from_secs(1));
