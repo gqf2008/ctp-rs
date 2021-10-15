@@ -9,7 +9,7 @@ use structopt::StructOpt;
 #[derive(StructOpt, Debug)]
 #[structopt(name = "basic")]
 struct Opt {
-    #[structopt(long, default_value = "DEBUG")]
+    #[structopt(long, default_value = "debug")]
     level: String,
     #[structopt(name = "broker_id", long, default_value = "9999")]
     broker_id: String,
@@ -25,13 +25,13 @@ struct Opt {
         default_value = "tcp://180.168.146.187:10201"
     )]
     trade_addr: String,
-    #[structopt(name = "login_passwd", short, long)]
+    #[structopt(name = "login_passwd", long)]
     login_passwd: String,
-    #[structopt(name = "trade_passwd", short, long)]
+    #[structopt(name = "trade_passwd", long)]
     trade_passwd: String,
-    #[structopt(name = "new_login_passwd", short, long)]
+    #[structopt(name = "new_login_passwd", long)]
     new_login_passwd: String,
-    #[structopt(name = "new_trade_passwd", short, long)]
+    #[structopt(name = "new_trade_passwd", long)]
     new_trade_passwd: String,
     /// Output file
     #[structopt(long, parse(from_os_str), default_value = "./")]
