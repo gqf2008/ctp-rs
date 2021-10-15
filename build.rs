@@ -40,6 +40,8 @@ fn main() {
         .write_to_file(out_path.join("bindings.rs"))
         .expect("Couldn't write bindings!");
 }
+
+#[cfg(any(not(target_os = "linux"), not(target_os = "windows")))]
 fn add_search_path() {
     unimplemented!("Not support for your os")
 }
