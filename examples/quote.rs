@@ -1,9 +1,7 @@
 use anyhow::Result;
 
 use crossbeam::channel::{self, Sender};
-use ctp_rs::{
-    ffi::*, Configuration, FromCBuf, QuoteApi, QuoteSpi, Response, ResumeType, TradeApi, TradeSpi,
-};
+use ctp_rs::{ffi::*, Configuration, FromCBuf, QuoteApi, QuoteSpi, Response};
 use std::path::PathBuf;
 use structopt::StructOpt;
 
@@ -55,7 +53,6 @@ fn main() -> Result<()> {
         .write_style_or("MY_LOG_STYLE", "always");
     env_logger::init_from_env(env);
     log::info!("quote.api {}", QuoteApi::version()?);
-    log::info!("trade.api {}", TradeApi::version()?);
     let (tx, rx) = channel::bounded(256);
     let mtx = tx.clone();
 
@@ -73,97 +70,74 @@ fn main() -> Result<()> {
     qapi.register_fens_user_info()?;
     qapi.register_spi(Myquote(tx));
     qapi.init();
-    std::thread::spawn(move || {
-        rx.iter().for_each(|ev| match ev {
-            Event::Quote(q) => {
-                log::info!(
-                    r#"
-                    TradingDay:{},ActionDay:{},ExchangeID:{},ExchangeInstID:{},InstrumentID:{},UpdateTime:{}
-                    Avg: {},Last: {},Volume:{},Turnover:{}
-                    Open({}),High({}),Low({}),Close({}) 
-                    Ask1:{},{},Bid1:{},{}
-                    Ask2:{},{},Bid2:{},{}
-                    Ask3:{},{},Bid3:{},{}
-                    Ask4:{},{},Bid4:{},{}
-                    Ask5:{},{},Bid5:{},{}
-                    "#,
-                    String::from_c_buf(&q.ActionDay),
-                    String::from_c_buf(&q.ExchangeID),
-                    String::from_c_buf(&q.ExchangeInstID),
-                    String::from_c_buf(&q.InstrumentID),
-                    String::from_c_buf(&q.UpdateTime),
-                    String::from_c_buf(&q.TradingDay),
-                    q.AveragePrice,q.LastPrice,
-                    q.Volume,q.Turnover,
-                    q.OpenPrice,q.HighestPrice,q.LowestPrice,q.ClosePrice,
-                    q.AskPrice1,
-                    q.AskVolume1,
-                    q.BidPrice1,
-                    q.BidVolume1,
-                    q.AskPrice2,
-                    q.AskVolume2,
-                    q.BidPrice2,
-                    q.BidVolume2,
-                    q.AskPrice3,
-                    q.AskVolume3,
-                    q.BidPrice3,
-                    q.BidVolume3,
-                    q.AskPrice4,
-                    q.AskVolume4,
-                    q.BidPrice4,
-                    q.BidVolume4,
-                    q.AskPrice5,
-                    q.AskVolume5,
-                    q.BidPrice5,
-                    q.BidVolume5,
-                );
+    rx.iter().for_each(|ev| match ev {
+        Event::Quote(q) => {
+            log::info!(
+                r#"
+                TradingDay:{},ActionDay:{},ExchangeID:{},ExchangeInstID:{},InstrumentID:{},UpdateTime:{}
+                Avg: {},Last: {},Volume:{},Turnover:{}
+                Open({}),High({}),Low({}),Close({}) 
+                Ask1:{},{},Bid1:{},{}
+                Ask2:{},{},Bid2:{},{}
+                Ask3:{},{},Bid3:{},{}
+                Ask4:{},{},Bid4:{},{}
+                Ask5:{},{},Bid5:{},{}
+                "#,
+                String::from_c_buf(&q.ActionDay),
+                String::from_c_buf(&q.ExchangeID),
+                String::from_c_buf(&q.ExchangeInstID),
+                String::from_c_buf(&q.InstrumentID),
+                String::from_c_buf(&q.UpdateTime),
+                String::from_c_buf(&q.TradingDay),
+                q.AveragePrice,q.LastPrice,
+                q.Volume,q.Turnover,
+                q.OpenPrice,q.HighestPrice,q.LowestPrice,q.ClosePrice,
+                q.AskPrice1,
+                q.AskVolume1,
+                q.BidPrice1,
+                q.BidVolume1,
+                q.AskPrice2,
+                q.AskVolume2,
+                q.BidPrice2,
+                q.BidVolume2,
+                q.AskPrice3,
+                q.AskVolume3,
+                q.BidPrice3,
+                q.BidVolume3,
+                q.AskPrice4,
+                q.AskVolume4,
+                q.BidPrice4,
+                q.BidVolume4,
+                q.AskPrice5,
+                q.AskVolume5,
+                q.BidPrice5,
+                q.BidVolume5,
+            );
+        }
+        Event::Login(login) => {
+            log::info!("trading day {} {:?}",String::from_c_buf(&login.TradingDay), login);
+            qapi.subscribe_market_data(&["ag2110", "ag2111"]).ok();
+            qapi.subscribe_for_quote(&["ag2110", "ag2111"]).ok();
+        }
+        Event::Connected => {
+            log::info!("connected ok");
+            if let Err(err) = qapi.login() {
+                log::error!("{}", err);
+                std::thread::sleep(std::time::Duration::from_secs(1));
+                mtx.send(Event::Connected).ok();
             }
-            Event::Login(login) => {
-                log::info!("trading day {} {:?}",String::from_c_buf(&login.TradingDay), login);
-                qapi.subscribe_market_data(&["ag2110", "ag2111"]).ok();
-                qapi.subscribe_for_quote(&["ag2110", "ag2111"]).ok();
-            }
-            Event::Connected => {
-                log::info!("connected ok");
-                if let Err(err) = qapi.login() {
-                    log::error!("{}", err);
-                    std::thread::sleep(std::time::Duration::from_secs(1));
-                    mtx.send(Event::Connected).ok();
-                }
-            }
-            Event::Error(err, msg) => {
-                log::error!("{} {}", err, msg);
-            }
-            Event::Disconnected(reason) => {
-                log::error!("{}", reason);
-            }
-            _ => {
-                log::debug!("{:?}", ev);
-            }
-        });
+        }
+        Event::Error(err, msg) => {
+            log::error!("{} {}", err, msg);
+        }
+        Event::Disconnected(reason) => {
+            log::error!("{}", reason);
+        }
+        _ => {
+            log::debug!("{:?}", ev);
+        }
     });
-    let mut tapi =
-        TradeApi::new(opt.tpath.to_str().unwrap_or("./"))?.with_configuration(Configuration {
-            broker_id: opt.broker_id,
-            user_id: opt.user_id,
-            appid: opt.appid,
-            auth_code: opt.auth_code,
-            front_addr: opt.trade_addr,
-            passwd: opt.passwd,
-            ..Default::default()
-        });
-    tapi.register_front()?;
-    tapi.register_fens_user_info()?;
-    tapi.register_spi(MyTradeSpi)?;
-    tapi.init();
-    std::thread::sleep(std::time::Duration::from_secs(1));
-    tapi.login()?;
-    std::thread::sleep(std::time::Duration::from_secs(1));
-    tapi.authenticate()?;
-    std::thread::sleep(std::time::Duration::from_secs(1));
-    tapi.subscribe_public_topic(ResumeType::THOST_TERT_RESTART)?;
-    tapi.subscribe_private_topic(ResumeType::THOST_TERT_RESTART)?;
-    tapi.wait()
+    qapi.wait()
 }
 
 #[derive(Debug)]
@@ -257,19 +231,5 @@ impl QuoteSpi for Myquote {
     ///询价通知
     fn on_for_quote(&self, info: &CThostFtdcForQuoteRspField) {
         log::debug!("{:?}", info);
-    }
-}
-
-#[derive(Debug, Clone)]
-struct MyTradeSpi;
-
-impl TradeSpi for MyTradeSpi {
-    ///登录请求响应
-    fn on_user_login(&self, info: &CThostFtdcRspUserLoginField, result: &Response) {
-        log::debug!("{:?} {:?}", info, result);
-    }
-
-    fn on_user_password_update(&self, info: &CThostFtdcUserPasswordUpdateField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
     }
 }
