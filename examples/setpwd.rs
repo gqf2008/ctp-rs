@@ -45,7 +45,7 @@ fn main() -> Result<()> {
             appid: opt.appid,
             auth_code: opt.auth_code,
             front_addr: opt.trade_addr,
-            passwd: opt.passwd,
+            passwd: opt.passwd.clone(),
             ..Default::default()
         });
     tapi.register_front()?;
@@ -53,7 +53,10 @@ fn main() -> Result<()> {
     tapi.register_spi(MyTradeSpi)?;
     tapi.init();
     std::thread::sleep(std::time::Duration::from_secs(1));
-    tapi.login()?;
+    if let Err(err) = tapi.login() {
+        log::error!("{}", err);
+        tapi.update_passwd(opt.passwd.as_str())?;
+    }
     std::thread::sleep(std::time::Duration::from_secs(1));
     tapi.update_passwd(opt.new_passwd.as_str())?;
     Ok(())

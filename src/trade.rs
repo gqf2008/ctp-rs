@@ -154,11 +154,13 @@ impl TradeApi {
     }
     pub fn login(&self) -> Result<()> {
         let mut info = <CThostFtdcReqUserLoginField as From<&Configuration>>::from(&self.conf);
-        unsafe {
+        match unsafe {
             let seq = self.seq.fetch_add(1, Ordering::SeqCst);
-            Trade_ReqUserLogin(self.api, &mut info, seq as i32);
+            Trade_ReqUserLogin(self.api, &mut info, seq as i32)
+        } {
+            0 => Ok(()),
+            ret => Err(anyhow!("{}", ret)),
         }
-        Ok(())
     }
 
     pub fn logout(&self) -> Result<()> {
