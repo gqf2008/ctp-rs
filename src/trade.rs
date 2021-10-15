@@ -63,7 +63,7 @@ impl TradeApi {
         unsafe { Trade_Init(self.api) }
     }
 
-    pub fn join(&self) -> Result<()> {
+    pub fn wait(&self) -> Result<()> {
         let ret = unsafe { Trade_Join(self.api) };
         if ret == 0 {
             Ok(())

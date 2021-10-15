@@ -1,12 +1,14 @@
 use anyhow::Result;
 
 use crossbeam::channel::{self, Sender};
-use ctp_rs::{ffi::*, Configuration, FromCBuf, QuoteApi, QuoteSpi, Response, TradeApi};
+use ctp_rs::{
+    ffi::*, Configuration, FromCBuf, QuoteApi, QuoteSpi, Response, ResumeType, TradeApi, TradeSpi,
+};
 use std::path::PathBuf;
 use structopt::StructOpt;
 
 /// A basic example
-#[derive(StructOpt, Debug)]
+#[derive(StructOpt, Debug, Clone)]
 #[structopt(name = "basic")]
 struct Opt {
     #[structopt(long, default_value = "debug")]
@@ -36,6 +38,8 @@ struct Opt {
     /// Output file
     #[structopt(long, parse(from_os_str), default_value = "./")]
     qpath: PathBuf,
+    #[structopt(long, parse(from_os_str), default_value = "./")]
+    tpath: PathBuf,
     #[structopt(long, parse(try_from_str), default_value = "false")]
     udp: bool,
     #[structopt(long, parse(try_from_str), default_value = "false")]
@@ -45,29 +49,31 @@ struct Opt {
 //https://www.simnow.com.cn/product.action
 fn main() -> Result<()> {
     let opt = Opt::from_args();
+    let qopt = opt.clone();
     let env = env_logger::Env::default()
-        .filter_or("MY_LOG_LEVEL", opt.level)
+        .filter_or("MY_LOG_LEVEL", qopt.level.as_str())
         .write_style_or("MY_LOG_STYLE", "always");
     env_logger::init_from_env(env);
     log::info!("quote.api {}", QuoteApi::version()?);
     log::info!("trade.api {}", TradeApi::version()?);
     let (tx, rx) = channel::bounded(256);
     let mtx = tx.clone();
-    let mut qapi = QuoteApi::new(opt.qpath.to_str().unwrap_or("./"), opt.udp, opt.multicast)?
+
+    let mut qapi = QuoteApi::new(qopt.qpath.to_str().unwrap_or("./"), opt.udp, opt.multicast)?
         .with_configuration(Configuration {
-            broker_id: opt.broker_id,
-            user_id: opt.user_id,
-            appid: opt.appid,
-            auth_code: opt.auth_code,
-            front_addr: opt.quote_addr,
-            passwd: opt.passwd,
+            broker_id: qopt.broker_id,
+            user_id: qopt.user_id,
+            appid: qopt.appid,
+            auth_code: qopt.auth_code,
+            front_addr: qopt.quote_addr,
+            passwd: qopt.passwd,
             ..Default::default()
         });
     qapi.register_front()?;
     qapi.register_fens_user_info()?;
     qapi.register_spi(Myquote(tx));
     qapi.init();
-    loop {
+    std::thread::spawn(move || {
         rx.iter().for_each(|ev| match ev {
             Event::Quote(q) => {
                 log::info!(
@@ -135,8 +141,28 @@ fn main() -> Result<()> {
                 log::debug!("{:?}", ev);
             }
         });
-    }
-    //qapi.wait()
+    });
+    let mut tapi =
+        TradeApi::new(opt.tpath.to_str().unwrap_or("./"))?.with_configuration(Configuration {
+            broker_id: opt.broker_id,
+            user_id: opt.user_id,
+            appid: opt.appid,
+            auth_code: opt.auth_code,
+            front_addr: opt.trade_addr,
+            passwd: opt.passwd,
+            ..Default::default()
+        });
+    tapi.register_front()?;
+    tapi.register_fens_user_info()?;
+    tapi.register_spi(MyTradeSpi)?;
+    tapi.init();
+    std::thread::sleep(std::time::Duration::from_secs(1));
+    tapi.authenticate()?;
+    tapi.login()?;
+    std::thread::sleep(std::time::Duration::from_secs(1));
+    tapi.subscribe_public_topic(ResumeType::THOST_TERT_RESTART)?;
+    tapi.subscribe_private_topic(ResumeType::THOST_TERT_RESTART)?;
+    tapi.wait()
 }
 
 #[derive(Debug)]
@@ -230,5 +256,19 @@ impl QuoteSpi for Myquote {
     ///询价通知
     fn on_for_quote(&self, info: &CThostFtdcForQuoteRspField) {
         log::debug!("{:?}", info);
+    }
+}
+
+#[derive(Debug, Clone)]
+struct MyTradeSpi;
+
+impl TradeSpi for MyTradeSpi {
+    ///登录请求响应
+    fn on_user_login(&self, info: &CThostFtdcRspUserLoginField, result: &Response) {
+        log::debug!("{:?} {:?}", info, result);
+    }
+
+    fn on_user_password_update(&self, info: &CThostFtdcUserPasswordUpdateField, result: &Response) {
+        log::debug!("info {:?} result {:?}", info, result);
     }
 }
