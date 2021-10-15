@@ -76,8 +76,8 @@ fn main() -> Result<()> {
             break;
         }
     }
-    tapi.subscribe_public_topic(ResumeType::THOST_TERT_RESTART)?;
-    tapi.subscribe_private_topic(ResumeType::THOST_TERT_RESTART)?;
+    tapi.subscribe_public_topic(ResumeType::THOST_TERT_QUICK)?;
+    tapi.subscribe_private_topic(ResumeType::THOST_TERT_QUICK)?;
     tapi.wait()
 }
 
