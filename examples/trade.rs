@@ -67,8 +67,14 @@ fn main() -> Result<()> {
     tapi.register_spi(MyTradeSpi)?;
     tapi.init();
     std::thread::sleep(std::time::Duration::from_secs(1));
-    tapi.login()?;
-    std::thread::sleep(std::time::Duration::from_secs(1));
+    loop {
+        if let Err(err) = tapi.login() {
+            log::error!("{}", err);
+            std::thread::sleep(std::time::Duration::from_secs(1));
+        } else {
+            break;
+        }
+    }
     tapi.authenticate()?;
     std::thread::sleep(std::time::Duration::from_secs(1));
     tapi.subscribe_public_topic(ResumeType::THOST_TERT_RESTART)?;
