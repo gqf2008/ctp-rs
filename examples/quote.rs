@@ -26,9 +26,9 @@ struct Opt {
     /// Output file
     #[structopt(long, parse(from_os_str), default_value = "./")]
     qpath: PathBuf,
-    #[structopt(long, default_value = "false")]
+    #[structopt(long, default_value = false)]
     udp: bool,
-    #[structopt(long, default_value = "false")]
+    #[structopt(long, default_value = false)]
     multicast: bool,
 }
 
@@ -43,8 +43,8 @@ fn main() -> Result<()> {
     log::info!("trade.api {}", TradeApi::version()?);
     let (tx, rx) = channel::bounded(256);
     let mtx = tx.clone();
-    let mut qapi = QuoteApi::new(opt.qpath.to_str()?, opt.udp, opt.multicast)?.with_configuration(
-        Configuration {
+    let mut qapi = QuoteApi::new(opt.qpath.to_str().unwrap_or("./"), opt.udp, opt.multicast)?
+        .with_configuration(Configuration {
             broker_id: opt.broker_id,
             user_id: opt.user_id,
             appid: opt.appid,
@@ -52,8 +52,7 @@ fn main() -> Result<()> {
             front_addr: opt.front_addr,
             passwd: opt.passwd,
             ..Default::default()
-        },
-    );
+        });
     qapi.register_front()?;
     qapi.register_fens_user_info()?;
     qapi.register_spi(Myquote(tx));
