@@ -40,7 +40,7 @@ pub unsafe extern "C" fn QuoteSpiStub_Rust_OnRspError(
 #[no_mangle]
 pub unsafe extern "C" fn QuoteSpiStub_Rust_OnHeartBeatWarning(spi: *mut c_void, timelapse: i32) {
     let spi = &mut **(spi as *mut *mut dyn QuoteSpi);
-    spi.on_heart_beat_warning(timelapse);
+    spi.on_heartbeat_warning(timelapse);
 }
 
 #[no_mangle]

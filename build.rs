@@ -40,18 +40,13 @@ fn main() {
         .write_to_file(out_path.join("bindings.rs"))
         .expect("Couldn't write bindings!");
 }
-
-#[cfg(not(target_os = "windows"))]
 fn add_search_path() {
-    for path in std::env::var("LD_LIBRARY_PATH")
-        .unwrap_or_else(|_| "".to_string())
-        .split(":")
-    {
-        if path.trim().len() == 0 {
-            continue;
-        }
-        println!("cargo:rustc-link-search={}", path);
-    }
+    unimplemented!("Not support for your os")
+}
+
+#[cfg(target_os = "linux")]
+fn add_search_path() {
+    println!("cargo:rustc-link-search={}", "lib/linux64");
 }
 
 #[cfg(target_os = "windows")]

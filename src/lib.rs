@@ -81,8 +81,21 @@ macro_rules! impl_ffi_convert {
         impl_ffi_convert!($rtype, $ctype, 0, $ub);
     };
 }
+pub trait ToStr {
+    fn to_string(&self) -> String;
+}
 
-trait FromCBuf<'a> {
+impl<const N: usize> ToStr for &[c_char; N] {
+    fn to_string(&self) -> String {
+        let b = match self.iter().position(|&c| c == 0) {
+            Some(pos) => &self[..pos],
+            None => &self[..],
+        };
+        let b = unsafe { &*(b as *const _ as *const [u8]) };
+        GBK.decode(b, DecoderTrap::Ignore).unwrap()
+    }
+}
+pub trait FromCBuf<'a> {
     fn from_c_buf(b: &'a [c_char]) -> Self;
 }
 
@@ -109,7 +122,7 @@ impl<'a> FromCBuf<'a> for String {
             Some(pos) => &b[..pos],
             None => b,
         };
-        GBK.decode(slice, DecoderTrap::Strict).unwrap()
+        GBK.decode(slice, DecoderTrap::Ignore).unwrap()
         // unsafe { String::from_utf8_unchecked(slice.to_vec()) }
     }
 }

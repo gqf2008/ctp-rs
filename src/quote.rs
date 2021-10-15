@@ -61,26 +61,6 @@ impl QuoteApi {
         }
     }
 
-    pub fn init(&self) {
-        unsafe { Quote_Init(self.api) }
-    }
-
-    pub fn join(&self) -> Result<()> {
-        let ret = unsafe { Quote_Join(self.api) };
-        if ret == 0 {
-            Ok(())
-        } else {
-            Err(anyhow!("join error {}", ret))
-        }
-    }
-
-    pub fn get_trading_day<'a>(&'a self) -> core::result::Result<&'a str, std::str::Utf8Error> {
-        unsafe {
-            let ptr = Quote_GetTradingDay(self.api);
-            CStr::from_ptr(ptr).to_str()
-        }
-    }
-
     pub fn register_front(&self) -> Result<()> {
         let addr = CString::new(self.conf.front_addr.as_str())?;
         unsafe {
@@ -118,6 +98,49 @@ impl QuoteApi {
         let ptr = Box::into_raw(Box::new(quote_spi_stub));
         self.stub = Some(ptr);
         unsafe { Quote_RegisterSpi(self.api, ptr as *mut CThostFtdcMdSpi) };
+    }
+
+    pub fn init(&self) {
+        unsafe { Quote_Init(self.api) }
+    }
+
+    pub fn login(&self) -> Result<()> {
+        let mut info = <CThostFtdcReqUserLoginField as From<&Configuration>>::from(&self.conf);
+        match unsafe {
+            let seq = self.seq.fetch_add(1, Ordering::SeqCst);
+            Quote_ReqUserLogin(self.api, &mut info, seq as i32)
+        } {
+            0 => Ok(()),
+            ret => Err(anyhow!("Error({})", ret)),
+        }
+    }
+
+    pub fn logout(&self) -> Result<()> {
+        let mut info = CThostFtdcUserLogoutField::default();
+        unsafe {
+            info.BrokerID = self.conf.broker_id.into_array::<11>();
+            info.UserID = self.conf.user_id.into_array::<16>();
+            let seq = self.seq.fetch_add(1, Ordering::SeqCst);
+
+            Quote_ReqUserLogout(self.api, &mut info, seq as i32);
+        }
+        Ok(())
+    }
+
+    pub fn wait(&self) -> Result<()> {
+        let ret = unsafe { Quote_Join(self.api) };
+        if ret == 0 {
+            Ok(())
+        } else {
+            Err(anyhow!("join error {}", ret))
+        }
+    }
+
+    pub fn get_trading_day<'a>(&'a self) -> core::result::Result<&'a str, std::str::Utf8Error> {
+        unsafe {
+            let ptr = Quote_GetTradingDay(self.api);
+            CStr::from_ptr(ptr).to_str()
+        }
     }
 
     pub fn subscribe_market_data(&self, symbols: &[&str]) -> Result<()> {
@@ -164,29 +187,6 @@ impl QuoteApi {
         Ok(())
     }
 
-    pub fn login(&self) -> Result<()> {
-        let mut info = <CThostFtdcReqUserLoginField as From<&Configuration>>::from(&self.conf);
-        match unsafe {
-            let seq = self.seq.fetch_add(1, Ordering::SeqCst);
-            Quote_ReqUserLogin(self.api, &mut info, seq as i32)
-        } {
-            0 => Ok(()),
-            ret => Err(anyhow!("Error({})", ret)),
-        }
-    }
-
-    pub fn logout(&self) -> Result<()> {
-        let mut info = CThostFtdcUserLogoutField::default();
-        unsafe {
-            info.BrokerID = self.conf.broker_id.into_array::<11>();
-            info.UserID = self.conf.user_id.into_array::<16>();
-            let seq = self.seq.fetch_add(1, Ordering::SeqCst);
-
-            Quote_ReqUserLogout(self.api, &mut info, seq as i32);
-        }
-        Ok(())
-    }
-
     pub fn query_multicast_instrument(&self, symbol: &str, topic_id: i32) -> Result<()> {
         let mut info = CThostFtdcQryMulticastInstrumentField::default();
         unsafe {
@@ -216,7 +216,7 @@ pub trait QuoteSpi: Send {
     }
     ///心跳超时警告。当长时间未收到报文时，该方法被调用。
     ///@param nTimeLapse 距离上次接收报文的时间
-    fn on_heart_beat_warning(&self, timelapse: i32) {
+    fn on_heartbeat_warning(&self, timelapse: i32) {
         log::debug!("on_disconnected timelapse {}", timelapse);
     }
     ///错误应答
