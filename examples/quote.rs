@@ -37,8 +37,6 @@ struct Opt {
     udp: bool,
     #[structopt(long, parse(try_from_str), default_value = "false")]
     multicast: bool,
-    #[structopt(long)]
-    symbols: String,
 }
 
 //https://www.simnow.com.cn/product.action

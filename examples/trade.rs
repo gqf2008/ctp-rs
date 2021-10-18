@@ -100,7 +100,7 @@ fn main() -> Result<()> {
             //     String::from_c_buf(&status.ExchangeInstID)
             // );
             let mut req = CThostFtdcQryInstrumentField::default();
-            req.ExchangeID = status.ExchangeID;
+            // req.ExchangeID = status.ExchangeID;
             // req.ExchangeInstID = status.ExchangeInstID;
             // req.InstrumentID = status.InstrumentID;
             tapi.query_instrument(&mut req).ok();
