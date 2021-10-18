@@ -229,20 +229,29 @@ impl QuoteSpi for Myquote {
     }
     ///订阅行情应答
     fn on_sub_market_data(&self, info: &CThostFtdcSpecificInstrumentField, result: &Response) {
-        log::debug!("{:?} {:?}", info, result);
+        if result.code!=0 {
+            log::warn!("{:?} {:?}", info, result);
+        }
+        
     }
     ///取消订阅行情应答
     fn on_unsub_market_data(&self, info: &CThostFtdcSpecificInstrumentField, result: &Response) {
-        log::debug!("{:?} {:?}", info, result);
+        if result.code!=0 {
+            log::warn!("{:?} {:?}", info, result);
+        }
     }
     ///订阅询价应答
     fn on_sub_for_quote(&self, info: &CThostFtdcSpecificInstrumentField, result: &Response) {
-        log::debug!("{:?} {:?}", info, result);
+        if result.code!=0 {
+            log::warn!("{:?} {:?}", info, result);
+        }
     }
 
     ///取消订阅询价应答
     fn on_unsub_for_quote(&self, info: &CThostFtdcSpecificInstrumentField, result: &Response) {
-        log::debug!("{:?} {:?}", info, result);
+        if result.code!=0 {
+            log::warn!("{:?} {:?}", info, result);
+        }
     }
     ///深度行情通知
     fn on_depth_market_data(&self, info: &CThostFtdcDepthMarketDataField) {
