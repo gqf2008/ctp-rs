@@ -14,7 +14,7 @@ struct Opt {
     level: String,
     #[structopt(name = "broker_id", long, default_value = "9999")]
     broker_id: String,
-    #[structopt(name = "user_id", short, long)]
+    #[structopt(name = "user_id", short, long, default_value = "uid")]
     user_id: String,
     #[structopt(long, default_value = "simnow_client_test")]
     appid: String,
@@ -26,7 +26,7 @@ struct Opt {
         default_value = "tcp://180.168.146.187:10131"
     )]
     quote_addr: String,
-    #[structopt(short, long)]
+    #[structopt(short, long, default_value = "passwd")]
     passwd: String,
     /// Output file
     #[structopt(long, parse(from_os_str), default_value = "./")]
