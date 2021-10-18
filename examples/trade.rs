@@ -72,11 +72,11 @@ fn main() -> Result<()> {
             passwd: opt.passwd,
             ..Default::default()
         });
+    tapi.register_spi(MyTradeSpi(tx))?;
+    tapi.subscribe_public_topic(ResumeType::THOST_TERT_RESTART)?;
+    tapi.subscribe_private_topic(ResumeType::THOST_TERT_RESTART)?;
     tapi.register_front()?;
     tapi.register_fens_user_info()?;
-    tapi.register_spi(MyTradeSpi(tx))?;
-    tapi.subscribe_public_topic(ResumeType::THOST_TERT_QUICK)?;
-    tapi.subscribe_private_topic(ResumeType::THOST_TERT_QUICK)?;
     tapi.init();
     tapi.authenticate()?;
     std::thread::sleep(std::time::Duration::from_secs(1));
@@ -89,8 +89,6 @@ fn main() -> Result<()> {
         }
     }
     // //查询所有合约
-    let mut req = CThostFtdcQryInstrumentField::default();
-    tapi.query_instrument(&mut req)?;
     rx.iter().for_each(|ev| match ev {
         Event::InstrumentStatus(status) => {
             log::info!(
@@ -119,6 +117,21 @@ fn main() -> Result<()> {
             //     String::from_c_buf(&info.CreateDate),
             // );
         }
+        Event::Login(info)=>{
+            log::info!(
+                "TradingDay:{}, LoginTime:{}, BrokerID:{}, UserID:{}, SystemName:{}, FrontID:{}, SessionID:{}, MaxOrderRef:{}",
+                String::from_c_buf(&info.TradingDay),
+                String::from_c_buf(&info.LoginTime),
+                String::from_c_buf(&info.BrokerID),
+                String::from_c_buf(&info.UserID),
+                String::from_c_buf(&info.SystemName),
+                info.FrontID,
+                info.SessionID,
+                String::from_c_buf(&info.MaxOrderRef),
+            );
+            let mut req = CThostFtdcQryInstrumentField::default();
+            tapi.query_instrument(&mut req).ok();
+        }
     });
     tapi.wait()
 }
@@ -127,6 +140,7 @@ fn main() -> Result<()> {
 enum Event {
     InstrumentStatus(CThostFtdcInstrumentStatusField),
     Instrument(CThostFtdcInstrumentField),
+    Login(CThostFtdcRspUserLoginField),
 }
 
 #[derive(Debug, Clone)]
@@ -135,19 +149,7 @@ struct MyTradeSpi(Sender<Event>);
 impl TradeSpi for MyTradeSpi {
     ///登录请求响应
     fn on_user_login(&self, info: &CThostFtdcRspUserLoginField, result: &Response) {
-        log::info!(
-            "TradingDay:{}, LoginTime:{}, BrokerID:{}, UserID:{}, SystemName:{}, FrontID:{}, SessionID:{}, MaxOrderRef:{} {} {}",
-            String::from_c_buf(&info.TradingDay),
-            String::from_c_buf(&info.LoginTime),
-            String::from_c_buf(&info.BrokerID),
-            String::from_c_buf(&info.UserID),
-            String::from_c_buf(&info.SystemName),
-            info.FrontID,
-            info.SessionID,
-            String::from_c_buf(&info.MaxOrderRef),
-            result.code,
-            result.message,
-        );
+        self.0.send(Event::Login(info.clone())).ok();
     }
 
     fn on_user_password_update(&self, info: &CThostFtdcUserPasswordUpdateField, result: &Response) {
