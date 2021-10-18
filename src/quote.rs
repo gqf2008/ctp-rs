@@ -6,6 +6,7 @@ use crate::{FromCBuf, ToArray};
 use anyhow::anyhow;
 use anyhow::Result;
 use libc::c_void;
+use std::any;
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -144,14 +145,16 @@ impl QuoteApi {
     }
 
     pub fn subscribe_market_data(&self, symbols: &[&str]) -> Result<()> {
-        unsafe {
+        match unsafe {
             let mut symbols: Vec<*mut c_char> = symbols
                 .iter()
                 .map(|symbol| CString::new(*symbol).unwrap().as_c_str().as_ptr() as *mut c_char)
                 .collect();
-            Quote_SubscribeMarketData(self.api, symbols.as_mut_ptr(), symbols.len() as i32);
+            Quote_SubscribeMarketData(self.api, symbols.as_mut_ptr(), symbols.len() as i32)
+        } {
+            0 => Ok(()),
+            ret => Err(anyhow!("error {}", ret)),
         }
-        Ok(())
     }
 
     pub fn unsubscribe_market_data(&self, symbols: &[&str]) -> Result<()> {
