@@ -230,9 +230,10 @@ impl QuoteSpi for Myquote {
     }
     ///订阅行情应答
     fn on_sub_market_data(&self, info: &CThostFtdcSpecificInstrumentField, result: &Response) {
-        if result.code!=0 {
-            log::warn!("{:?} {:?}", info, result);
-        }
+        // if result.code!=0 {
+        //     log::warn!("{:?} {:?}", info, result);
+        // }
+        log::debug!("InstrumentID:{} {}",String::from_c_buf(&info.InstrumentID),result.code);
         
     }
     ///取消订阅行情应答
