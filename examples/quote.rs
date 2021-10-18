@@ -246,10 +246,11 @@ impl QuoteSpi for Myquote {
     }
     ///深度行情通知
     fn on_depth_market_data(&self, info: &CThostFtdcDepthMarketDataField) {
+        log::info!("{:?}", info);
         self.0.send(Event::Quote(info.clone())).ok();
     }
     ///询价通知
     fn on_for_quote(&self, info: &CThostFtdcForQuoteRspField) {
-        log::debug!("{:?}", info);
+        log::info!("{:?}", info);
     }
 }
