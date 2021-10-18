@@ -37,6 +37,8 @@ struct Opt {
     udp: bool,
     #[structopt(long, parse(try_from_str), default_value = "false")]
     multicast: bool,
+    #[structopt(long)]
+    symbols: String,
 }
 
 //https://www.simnow.com.cn/product.action
@@ -123,8 +125,9 @@ fn main() -> Result<()> {
         }
         Event::Login(login) => {
             log::info!("trading day {} {:?}",String::from_c_buf(&login.TradingDay), login);
-            qapi.subscribe_market_data(&["cu2111", "cu2112", "cu2201", "cu2202", "cu2203", "cu2204"]).ok();
-            qapi.subscribe_for_quote(&["cu2111", "cu2112", "cu2201", "cu2202", "cu2203", "cu2204"]).ok();
+            let symbols:Vec<&str> = opt.symbols.split_whitespace().collect();
+            qapi.subscribe_market_data(&symbols).ok();
+            qapi.subscribe_for_quote(&symbols).ok();
         }
         Event::Connected => {
             log::info!("connected ok");
