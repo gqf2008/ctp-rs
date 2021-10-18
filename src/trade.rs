@@ -1162,7 +1162,7 @@ pub trait TradeSpi {
 
     ///请求查询合约响应
     fn on_qry_instrument(&self, info: Option<&CThostFtdcInstrumentField>, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::info!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询行情响应

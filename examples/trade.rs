@@ -1,5 +1,6 @@
 use anyhow::Result;
 
+use crossbeam::channel::{self, Sender};
 use ctp_rs::{ffi::*, Configuration, FromCBuf, Response, ResumeType, ToArray, TradeApi, TradeSpi};
 use std::io::Write;
 use std::path::PathBuf;
@@ -59,6 +60,8 @@ fn main() -> Result<()> {
         })
         .init();
     log::info!("trade.api {}", TradeApi::version()?);
+    let (tx, rx) = channel::bounded(256);
+    let mtx = tx.clone();
     let mut tapi =
         TradeApi::new(opt.tpath.to_str().unwrap_or("./"))?.with_configuration(Configuration {
             broker_id: opt.broker_id,
@@ -71,7 +74,7 @@ fn main() -> Result<()> {
         });
     tapi.register_front()?;
     tapi.register_fens_user_info()?;
-    tapi.register_spi(MyTradeSpi)?;
+    tapi.register_spi(MyTradeSpi(tx))?;
     tapi.init();
     tapi.authenticate()?;
     std::thread::sleep(std::time::Duration::from_secs(1));
@@ -85,19 +88,39 @@ fn main() -> Result<()> {
     }
     tapi.subscribe_public_topic(ResumeType::THOST_TERT_QUICK)?;
     tapi.subscribe_private_topic(ResumeType::THOST_TERT_QUICK)?;
-    let mut req = CThostFtdcQryInstrumentField::default();
-    req.ExchangeID = "SHFE".into_array::<9>();
-    req.ExchangeInstID = "sn".into_array::<81>();
-    req.InstrumentID = "".into_array::<81>();
-    req.ProductID = "".into_array::<81>();
-    log::info!("query_instrument");
-    tapi.query_instrument(&mut req)?;
-    log::info!("query_instrument sent");
+    rx.iter().for_each(|ev| match ev {
+        Event::InstrumentStatus(status) => {
+            log::info!(
+                "Exchange:{}, Instrument:{},SettlementGroup:{}, EnterTime:{}, ExchangeInstID:{}",
+                String::from_c_buf(&status.ExchangeID),
+                String::from_c_buf(&status.InstrumentID),
+                String::from_c_buf(&status.SettlementGroupID),
+                String::from_c_buf(&status.EnterTime),
+                String::from_c_buf(&status.ExchangeInstID)
+            );
+            let mut req = CThostFtdcQryInstrumentField::default();
+            req.ExchangeID = status.ExchangeID;
+            req.ExchangeInstID = status.ExchangeInstID;
+            req.InstrumentID = status.InstrumentID;
+            log::info!("query_instrument");
+            tapi.query_instrument(&mut req).ok();
+            log::info!("query_instrument sent");
+        }
+        Event::Instrument(info) => {
+            log::info!("{:?}", info);
+        }
+    });
     tapi.wait()
 }
 
+#[derive(Debug)]
+enum Event {
+    InstrumentStatus(CThostFtdcInstrumentStatusField),
+    Instrument(CThostFtdcInstrumentField),
+}
+
 #[derive(Debug, Clone)]
-struct MyTradeSpi;
+struct MyTradeSpi(Sender<Event>);
 
 impl TradeSpi for MyTradeSpi {
     ///登录请求响应
@@ -122,13 +145,14 @@ impl TradeSpi for MyTradeSpi {
     }
     ///合约交易状态通知
     fn on_rtn_instrument_status(&self, info: &CThostFtdcInstrumentStatusField) {
-        log::info!(
-            "Exchange:{}, Instrument:{},SettlementGroup:{}, EnterTime:{}, ExchangeInstID:{}",
-            String::from_c_buf(&info.ExchangeID),
-            String::from_c_buf(&info.InstrumentID),
-            String::from_c_buf(&info.SettlementGroupID),
-            String::from_c_buf(&info.EnterTime),
-            String::from_c_buf(&info.ExchangeInstID)
-        );
+        self.0.send(Event::InstrumentStatus(info.clone())).ok();
+    }
+
+    ///请求查询合约响应
+    fn on_qry_instrument(&self, info: Option<&CThostFtdcInstrumentField>, result: &Response) {
+        log::info!("info {:?} result {:?}", info, result);
+        if let Some(info) = info {
+            self.0.send(Event::Instrument(info.clone())).ok();
+        }
     }
 }

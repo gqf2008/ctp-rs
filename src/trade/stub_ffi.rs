@@ -608,7 +608,7 @@ pub unsafe extern "C" fn TradeSpiStub_Rust_OnRspQryInstrument(
     nRequestID: i32,
     bIsLast: bool,
 ) {
-    log::debug!("TradeSpiStub_Rust_OnRspQryInstrument");
+    log::info!("TradeSpiStub_Rust_OnRspQryInstrument");
     let spi = &mut **(spi as *mut *mut dyn TradeSpi);
     let result = Response::from(&*pRspInfo)
         .with_req_id(nRequestID)
