@@ -106,7 +106,16 @@ fn main() -> Result<()> {
             tapi.query_instrument(&mut req).ok();
         }
         Event::Instrument(info) => {
-            log::info!("{:?}", info);
+            log::info!(
+                "Ex:{}, ExInst:{}, Symbol:{}, SymbolName:{}, IsTrading:{}, Pid:{}, CreateDate:{}",
+                String::from_c_buf(&info.ExchangeID),
+                String::from_c_buf(&info.ExchangeInstID),
+                String::from_c_buf(&info.InstrumentID),
+                String::from_c_buf(&info.InstrumentName),
+                info.IsTrading,
+                String::from_c_buf(&info.ProductID),
+                String::from_c_buf(&info.CreateDate),
+            );
         }
     });
     tapi.wait()
@@ -149,7 +158,7 @@ impl TradeSpi for MyTradeSpi {
 
     ///请求查询合约响应
     fn on_qry_instrument(&self, info: Option<&CThostFtdcInstrumentField>, result: &Response) {
-        log::info!("info {:?} result {:?}", info, result);
+        // log::info!("info {:?} result {:?}", info, result);
         if let Some(info) = info {
             self.0.send(Event::Instrument(info.clone())).ok();
         }

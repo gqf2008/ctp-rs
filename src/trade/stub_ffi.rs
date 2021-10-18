@@ -608,7 +608,7 @@ pub unsafe extern "C" fn TradeSpiStub_Rust_OnRspQryInstrument(
     nRequestID: i32,
     bIsLast: bool,
 ) {
-    log::info!(
+    log::debug!(
         "TradeSpiStub_Rust_OnRspQryInstrument {:?} {:?}",
         pInstrument,
         pRspInfo
