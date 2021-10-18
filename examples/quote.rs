@@ -5,6 +5,7 @@ use ctp_rs::{ffi::*, Configuration, FromCBuf, QuoteApi, QuoteSpi, Response};
 use std::io::Write;
 use std::path::PathBuf;
 use structopt::StructOpt;
+use std::ffi::CString;
 
 /// A basic example
 #[derive(StructOpt, Debug, Clone)]
@@ -126,8 +127,8 @@ fn main() -> Result<()> {
             use std::io::{ BufRead,BufReader};
             let file = std::fs::File::open("symbols.txt").unwrap();
            
-            let symbols:Vec<String> =BufReader::new(file).lines().map(|x| x.unwrap()).collect();
-            let symbols: Vec<&str> = symbols.iter().map(|s| &s[..]).collect();
+            let symbols:Vec<CString> =BufReader::new(file).lines().map(|x| CString::new(x.unwrap()).unwrap()).collect();
+            //let symbols: Vec<&str> = symbols.iter().map(|s| &s[..]).collect();
             qapi.subscribe_market_data(&symbols).ok();
             log::debug!("sub {:?}",symbols);
            // qapi.subscribe_for_quote(&symbols).ok();
