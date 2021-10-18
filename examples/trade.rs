@@ -88,6 +88,11 @@ fn main() -> Result<()> {
     }
     tapi.subscribe_public_topic(ResumeType::THOST_TERT_QUICK)?;
     tapi.subscribe_private_topic(ResumeType::THOST_TERT_QUICK)?;
+    let mut req = CThostFtdcQryInstrumentField::default();
+    // req.ExchangeID = status.ExchangeID;
+    // req.ExchangeInstID = status.ExchangeInstID;
+    // req.InstrumentID = status.InstrumentID;
+    tapi.query_instrument(&mut req).ok();
     rx.iter().for_each(|ev| match ev {
         Event::InstrumentStatus(status) => {
             log::info!(
@@ -98,13 +103,6 @@ fn main() -> Result<()> {
                 String::from_c_buf(&status.EnterTime),
                 String::from_c_buf(&status.ExchangeInstID)
             );
-            let mut req = CThostFtdcQryInstrumentField::default();
-            req.ExchangeID = status.ExchangeID;
-            req.ExchangeInstID = status.ExchangeInstID;
-            req.InstrumentID = status.InstrumentID;
-            log::info!("query_instrument");
-            tapi.query_instrument(&mut req).ok();
-            log::info!("query_instrument sent");
         }
         Event::Instrument(info) => {
             log::info!("{:?}", info);
