@@ -129,6 +129,7 @@ fn main() -> Result<()> {
             let symbols:Vec<String> =BufReader::new(file).lines().map(|x| x.unwrap()).collect();
             let symbols: Vec<&str> = symbols.iter().map(|s| &s[..]).collect();
             qapi.subscribe_market_data(&symbols).ok();
+            log::debug!("sub {:?}",symbols);
            // qapi.subscribe_for_quote(&symbols).ok();
         }
         Event::Connected => {
