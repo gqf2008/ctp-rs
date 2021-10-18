@@ -88,9 +88,9 @@ fn main() -> Result<()> {
     }
     tapi.subscribe_public_topic(ResumeType::THOST_TERT_QUICK)?;
     tapi.subscribe_private_topic(ResumeType::THOST_TERT_QUICK)?;
-    //查询所有合约
-    let mut req = CThostFtdcQryInstrumentField::default();
-    tapi.query_instrument(&mut req)?;
+    // //查询所有合约
+    // let mut req = CThostFtdcQryInstrumentField::default();
+    // tapi.query_instrument(&mut req)?;
     rx.iter().for_each(|ev| match ev {
         Event::InstrumentStatus(status) => {
             // log::info!(
@@ -101,23 +101,23 @@ fn main() -> Result<()> {
             //     String::from_c_buf(&status.EnterTime),
             //     String::from_c_buf(&status.ExchangeInstID)
             // );
-            //let mut req = CThostFtdcQryInstrumentField::default();
-            // req.ExchangeID = status.ExchangeID;
-            // req.ExchangeInstID = status.ExchangeInstID;
-            // req.InstrumentID = status.InstrumentID;
-            //tapi.query_instrument(&mut req).ok();
+            let mut req = CThostFtdcQryInstrumentField::default();
+            tapi.query_instrument(&mut req).ok();
         }
         Event::Instrument(info) => {
-            log::info!(
-                "Ex:{}, ExInst:{}, Symbol:{}, SymbolName:{}, IsTrading:{}, Pid:{}, CreateDate:{}",
-                String::from_c_buf(&info.ExchangeID),
-                String::from_c_buf(&info.ExchangeInstID),
-                String::from_c_buf(&info.InstrumentID),
-                String::from_c_buf(&info.InstrumentName),
-                info.IsTrading,
-                String::from_c_buf(&info.ProductID),
-                String::from_c_buf(&info.CreateDate),
-            );
+            if info.IsTrading == 1 {
+                println!("{}", String::from_c_buf(&info.InstrumentID));
+            }
+            // log::info!(
+            //     "Ex:{}, ExInst:{}, Symbol:{}, SymbolName:{}, IsTrading:{}, Pid:{}, CreateDate:{}",
+            //     String::from_c_buf(&info.ExchangeID),
+            //     String::from_c_buf(&info.ExchangeInstID),
+            //     String::from_c_buf(&info.InstrumentID),
+            //     String::from_c_buf(&info.InstrumentName),
+            //     info.IsTrading,
+            //     String::from_c_buf(&info.ProductID),
+            //     String::from_c_buf(&info.CreateDate),
+            // );
         }
     });
     tapi.wait()
