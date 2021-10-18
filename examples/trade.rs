@@ -91,14 +91,14 @@ fn main() -> Result<()> {
 
     rx.iter().for_each(|ev| match ev {
         Event::InstrumentStatus(status) => {
-            log::info!(
-                "Exchange:{}, Instrument:{},SettlementGroup:{}, EnterTime:{}, ExchangeInstID:{}",
-                String::from_c_buf(&status.ExchangeID),
-                String::from_c_buf(&status.InstrumentID),
-                String::from_c_buf(&status.SettlementGroupID),
-                String::from_c_buf(&status.EnterTime),
-                String::from_c_buf(&status.ExchangeInstID)
-            );
+            // log::info!(
+            //     "Exchange:{}, Instrument:{},SettlementGroup:{}, EnterTime:{}, ExchangeInstID:{}",
+            //     String::from_c_buf(&status.ExchangeID),
+            //     String::from_c_buf(&status.InstrumentID),
+            //     String::from_c_buf(&status.SettlementGroupID),
+            //     String::from_c_buf(&status.EnterTime),
+            //     String::from_c_buf(&status.ExchangeInstID)
+            // );
             let mut req = CThostFtdcQryInstrumentField::default();
             req.ExchangeID = status.ExchangeID;
             // req.ExchangeInstID = status.ExchangeInstID;
