@@ -87,6 +87,10 @@ fn main() -> Result<()> {
                 Avg: {},Last: {},Volume:{},Turnover:{}
                 Open({}),High({}),Low({}),Close({}) 
                 Ask1:{},{},Bid1:{},{}
+                Ask2:{},{},Bid2:{},{}
+                Ask3:{},{},Bid3:{},{}
+                Ask4:{},{},Bid4:{},{}
+                Ask5:{},{},Bid5:{},{}
                 "#,
                 String::from_c_buf(&q.TradingDay),
                 String::from_c_buf(&q.ActionDay),
@@ -96,27 +100,27 @@ fn main() -> Result<()> {
                 String::from_c_buf(&q.UpdateTime),
                 q.AveragePrice,q.LastPrice,
                 q.Volume,q.Turnover,
-                q.OpenPrice,q.HighestPrice,q.LowestPrice,q.ClosePrice,
-                q.AskPrice1,
+                if q.OpenPrice.is_normal() {q.OpenPrice}else {f64::NAN},if q.HighestPrice.is_normal() {q.HighestPrice}else {f64::NAN}, if q.LowestPrice.is_normal() {q.LowestPrice}else {f64::NAN},if q.ClosePrice.is_normal() {q.ClosePrice}else {f64::NAN},
+                if q.AskPrice1.is_normal() {q.AskPrice1}else {f64::NAN},
                 q.AskVolume1,
-                q.BidPrice1,
+                if q.BidPrice1.is_normal() {q.BidPrice1}else {f64::NAN},
                 q.BidVolume1,
-                // q.AskPrice2,
-                // q.AskVolume2,
-                // q.BidPrice2,
-                // q.BidVolume2,
-                // q.AskPrice3,
-                // q.AskVolume3,
-                // q.BidPrice3,
-                // q.BidVolume3,
-                // q.AskPrice4,
-                // q.AskVolume4,
-                // q.BidPrice4,
-                // q.BidVolume4,
-                // q.AskPrice5,
-                // q.AskVolume5,
-                // q.BidPrice5,
-                // q.BidVolume5,
+                if q.AskPrice2.is_normal() {q.AskPrice2}else {f64::NAN},
+                q.AskVolume2,
+                if q.BidPrice2.is_normal() {q.BidPrice2}else {f64::NAN},
+                q.BidVolume2,
+                if q.AskPrice3.is_normal() {q.AskPrice3}else {f64::NAN},
+                q.AskVolume3,
+                if q.BidPrice3.is_normal() {q.BidPrice3}else {f64::NAN},
+                q.BidVolume3,
+                if q.AskPrice4.is_normal() {q.AskPrice4}else {f64::NAN},
+                q.AskVolume4,
+                if q.BidPrice4.is_normal() {q.BidPrice4}else {f64::NAN},
+                q.BidVolume4,
+                if q.AskPrice5.is_normal() {q.AskPrice5}else {f64::NAN},
+                q.AskVolume5,
+                if q.BidPrice5.is_normal() {q.BidPrice5}else {f64::NAN},
+                q.BidVolume5,
             );
         }
         Event::Login(login) => {
