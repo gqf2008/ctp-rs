@@ -160,7 +160,7 @@ impl TradeSpi for MyTradeSpi {
 
     ///请求查询合约响应
     fn on_qry_instrument(&self, info: Option<&CThostFtdcInstrumentField>, result: &Response) {
-        // log::info!("info {:?} result {:?}", info, result);
+        log::debug!("info {:?} result {:?}", info, result);
         if let Some(info) = info {
             self.0.send(Event::Instrument(info.clone())).ok();
         }
