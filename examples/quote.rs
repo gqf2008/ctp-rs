@@ -158,7 +158,7 @@ fn main() -> Result<()> {
             log::debug!("{:?}", ev);
         }
     });
-    qapi.wait()
+    Ok(())
 }
 
 #[derive(Debug)]
