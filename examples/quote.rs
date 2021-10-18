@@ -129,7 +129,7 @@ fn main() -> Result<()> {
             let symbols:Vec<String> =BufReader::new(file).lines().map(|x| x.unwrap()).collect();
             let symbols: Vec<&str> = symbols.iter().map(|s| &s[..]).collect();
             qapi.subscribe_market_data(&symbols).ok();
-            qapi.subscribe_for_quote(&symbols).ok();
+           // qapi.subscribe_for_quote(&symbols).ok();
         }
         Event::Connected => {
             log::info!("connected ok");
@@ -246,7 +246,7 @@ impl QuoteSpi for Myquote {
     }
     ///深度行情通知
     fn on_depth_market_data(&self, info: &CThostFtdcDepthMarketDataField) {
-        log::info!("{:?}", info);
+        // log::info!("{:?}", info);
         self.0.send(Event::Quote(info.clone())).ok();
     }
     ///询价通知

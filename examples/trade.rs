@@ -151,7 +151,7 @@ impl TradeSpi for MyTradeSpi {
     }
 
     fn on_user_password_update(&self, info: &CThostFtdcUserPasswordUpdateField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::debug!("{:?} result {:?}", info, result);
     }
     ///合约交易状态通知
     fn on_rtn_instrument_status(&self, info: &CThostFtdcInstrumentStatusField) {
@@ -160,7 +160,7 @@ impl TradeSpi for MyTradeSpi {
 
     ///请求查询合约响应
     fn on_qry_instrument(&self, info: Option<&CThostFtdcInstrumentField>, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::debug!("{:?} result {:?}", info, result);
         if let Some(info) = info {
             self.0.send(Event::Instrument(info.clone())).ok();
         }
