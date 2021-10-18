@@ -75,6 +75,8 @@ fn main() -> Result<()> {
     tapi.register_front()?;
     tapi.register_fens_user_info()?;
     tapi.register_spi(MyTradeSpi(tx))?;
+    tapi.subscribe_public_topic(ResumeType::THOST_TERT_QUICK)?;
+    tapi.subscribe_private_topic(ResumeType::THOST_TERT_QUICK)?;
     tapi.init();
     tapi.authenticate()?;
     std::thread::sleep(std::time::Duration::from_secs(1));
@@ -86,8 +88,6 @@ fn main() -> Result<()> {
             break;
         }
     }
-    tapi.subscribe_public_topic(ResumeType::THOST_TERT_QUICK)?;
-    tapi.subscribe_private_topic(ResumeType::THOST_TERT_QUICK)?;
     // //查询所有合约
     // let mut req = CThostFtdcQryInstrumentField::default();
     // tapi.query_instrument(&mut req)?;
