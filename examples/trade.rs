@@ -90,7 +90,9 @@ fn main() -> Result<()> {
     req.ExchangeInstID = "sn".into_array::<81>();
     req.InstrumentID = "".into_array::<81>();
     req.ProductID = "".into_array::<81>();
+    log::info!("query_instrument");
     tapi.query_instrument(&mut req)?;
+    log::info!("query_instrument sent");
     tapi.wait()
 }
 
