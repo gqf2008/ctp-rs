@@ -148,9 +148,7 @@ impl QuoteApi {
         match unsafe {
             let mut symbols: Vec<*mut c_char> = symbols
                 .iter()
-                .map(|symbol| {
-                    CString::new(*symbol).unwrap().as_bytes_with_nul().as_ptr() as *mut c_char
-                })
+                .map(|symbol| CString::new(*symbol).unwrap().as_bytes().as_ptr() as *mut c_char)
                 .collect();
             Quote_SubscribeMarketData(self.api, symbols.as_mut_ptr(), symbols.len() as i32)
         } {
