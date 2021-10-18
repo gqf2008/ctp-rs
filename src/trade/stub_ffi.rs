@@ -622,9 +622,9 @@ pub unsafe extern "C" fn TradeSpiStub_Rust_OnRspQryInstrument(
     .with_req_id(nRequestID)
     .with_is_last(bIsLast);
     if pInstrument.is_null() {
-        spi.on_qry_instrument(Some(&*pInstrument), &result)
-    } else {
         spi.on_qry_instrument(None, &result)
+    } else {
+        spi.on_qry_instrument(Some(&*pInstrument), &result)
     }
 }
 
