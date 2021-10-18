@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use ctp_rs::{ffi::*, Configuration, FromCBuf, Response, ResumeType, TradeApi, TradeSpi};
+use ctp_rs::{ffi::*, Configuration, FromCBuf, Response, ResumeType, ToArray, TradeApi, TradeSpi};
 use std::io::Write;
 use std::path::PathBuf;
 use structopt::StructOpt;
@@ -85,6 +85,10 @@ fn main() -> Result<()> {
     }
     tapi.subscribe_public_topic(ResumeType::THOST_TERT_QUICK)?;
     tapi.subscribe_private_topic(ResumeType::THOST_TERT_QUICK)?;
+    let mut req = CThostFtdcQryInstrumentField::default();
+    req.ExchangeID = "SHFE".into_array::<9>();
+    req.ExchangeInstID = "sn".into_array::<81>();
+    tapi.query_instrument(&mut req)?;
     tapi.wait()
 }
 
