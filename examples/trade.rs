@@ -88,7 +88,9 @@ fn main() -> Result<()> {
     }
     tapi.subscribe_public_topic(ResumeType::THOST_TERT_QUICK)?;
     tapi.subscribe_private_topic(ResumeType::THOST_TERT_QUICK)?;
-
+    //查询所有合约
+    let mut req = CThostFtdcQryInstrumentField::default();
+    tapi.query_instrument(&mut req)?;
     rx.iter().for_each(|ev| match ev {
         Event::InstrumentStatus(status) => {
             // log::info!(
@@ -99,11 +101,11 @@ fn main() -> Result<()> {
             //     String::from_c_buf(&status.EnterTime),
             //     String::from_c_buf(&status.ExchangeInstID)
             // );
-            let mut req = CThostFtdcQryInstrumentField::default();
+            //let mut req = CThostFtdcQryInstrumentField::default();
             // req.ExchangeID = status.ExchangeID;
             // req.ExchangeInstID = status.ExchangeInstID;
             // req.InstrumentID = status.InstrumentID;
-            tapi.query_instrument(&mut req).ok();
+            //tapi.query_instrument(&mut req).ok();
         }
         Event::Instrument(info) => {
             log::info!(
