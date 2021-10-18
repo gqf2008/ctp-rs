@@ -88,12 +88,12 @@ fn main() -> Result<()> {
                 Open({}),High({}),Low({}),Close({}) 
                 Ask1:{},{},Bid1:{},{}
                 "#,
+                String::from_c_buf(&q.TradingDay),
                 String::from_c_buf(&q.ActionDay),
                 String::from_c_buf(&q.ExchangeID),
                 String::from_c_buf(&q.ExchangeInstID),
                 String::from_c_buf(&q.InstrumentID),
                 String::from_c_buf(&q.UpdateTime),
-                String::from_c_buf(&q.TradingDay),
                 q.AveragePrice,q.LastPrice,
                 q.Volume,q.Turnover,
                 q.OpenPrice,q.HighestPrice,q.LowestPrice,q.ClosePrice,
