@@ -88,6 +88,8 @@ fn main() -> Result<()> {
     let mut req = CThostFtdcQryInstrumentField::default();
     req.ExchangeID = "SHFE".into_array::<9>();
     req.ExchangeInstID = "sn".into_array::<81>();
+    req.InstrumentID = "".into_array::<81>();
+    req.ProductID = "".into_array::<81>();
     tapi.query_instrument(&mut req)?;
     tapi.wait()
 }

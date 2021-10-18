@@ -612,7 +612,11 @@ pub unsafe extern "C" fn TradeSpiStub_Rust_OnRspQryInstrument(
     let result = Response::from(&*pRspInfo)
         .with_req_id(nRequestID)
         .with_is_last(bIsLast);
-    spi.on_qry_instrument(&*pInstrument, &result)
+    if pInstrument.is_null() {
+        spi.on_qry_instrument(Some(&*pInstrument), &result)
+    } else {
+        spi.on_qry_instrument(None, &result)
+    }
 }
 
 ///请求查询行情响应
