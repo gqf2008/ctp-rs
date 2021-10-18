@@ -125,7 +125,11 @@ fn main() -> Result<()> {
         }
         Event::Login(login) => {
             log::info!("trading day {} {:?}",String::from_c_buf(&login.TradingDay), login);
-            let symbols:Vec<&str> = opt.symbols.split_whitespace().collect();
+            use std::io::{ BufRead,BufReader};
+            let file = std::fs::File::open("symbols.txt").unwrap();
+           
+            let symbols:Vec<String> =BufReader::new(file).lines().map(|x| x.unwrap()).collect();
+            let symbols: Vec<&str> = symbols.iter().map(|s| &s[..]).collect();
             qapi.subscribe_market_data(&symbols).ok();
             qapi.subscribe_for_quote(&symbols).ok();
         }
