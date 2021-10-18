@@ -103,19 +103,17 @@ fn main() -> Result<()> {
             // tapi.query_instrument(&mut req).ok();
         }
         Event::Instrument(info) => {
-            if info.IsTrading == 1 {
-                println!("{}", String::from_c_buf(&info.InstrumentID));
-            }
-            // log::info!(
-            //     "Ex:{}, ExInst:{}, Symbol:{}, SymbolName:{}, IsTrading:{}, Pid:{}, CreateDate:{}",
-            //     String::from_c_buf(&info.ExchangeID),
-            //     String::from_c_buf(&info.ExchangeInstID),
-            //     String::from_c_buf(&info.InstrumentID),
-            //     String::from_c_buf(&info.InstrumentName),
-            //     info.IsTrading,
-            //     String::from_c_buf(&info.ProductID),
-            //     String::from_c_buf(&info.CreateDate),
-            // );
+            
+            log::info!(
+                "Ex:{}, ExInst:{}, Symbol:{}, SymbolName:{}, IsTrading:{}, Pid:{}, CreateDate:{}",
+                String::from_c_buf(&info.ExchangeID),
+                String::from_c_buf(&info.ExchangeInstID),
+                String::from_c_buf(&info.InstrumentID),
+                String::from_c_buf(&info.InstrumentName),
+                info.IsTrading,
+                String::from_c_buf(&info.ProductID),
+                String::from_c_buf(&info.CreateDate),
+            );
         }
         Event::Login(info)=>{
             log::info!(
