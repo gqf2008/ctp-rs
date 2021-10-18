@@ -220,6 +220,14 @@ pub struct Response {
 }
 
 impl Response {
+    pub fn new() -> Self {
+        Self {
+            code: 0,
+            message: "OK".to_string(),
+            req_id: None,
+            is_last: None,
+        }
+    }
     pub fn with_req_id(mut self, req_id: i32) -> Self {
         self.req_id = Some(req_id);
         self

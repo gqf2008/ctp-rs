@@ -608,11 +608,19 @@ pub unsafe extern "C" fn TradeSpiStub_Rust_OnRspQryInstrument(
     nRequestID: i32,
     bIsLast: bool,
 ) {
-    log::info!("TradeSpiStub_Rust_OnRspQryInstrument");
+    log::info!(
+        "TradeSpiStub_Rust_OnRspQryInstrument {:?} {:?}",
+        pInstrument,
+        pRspInfo
+    );
     let spi = &mut **(spi as *mut *mut dyn TradeSpi);
-    let result = Response::from(&*pRspInfo)
-        .with_req_id(nRequestID)
-        .with_is_last(bIsLast);
+    let result = if pRspInfo.is_null() {
+        Response::new()
+    } else {
+        Response::from(&*pRspInfo)
+    }
+    .with_req_id(nRequestID)
+    .with_is_last(bIsLast);
     if pInstrument.is_null() {
         spi.on_qry_instrument(Some(&*pInstrument), &result)
     } else {
