@@ -80,16 +80,13 @@ fn main() -> Result<()> {
     qapi.init();
     rx.iter().for_each(|ev| match ev {
         Event::Quote(q) => {
+            
             log::info!(
                 r#"
                 TradingDay:{},ActionDay:{},ExchangeID:{},ExchangeInstID:{},InstrumentID:{},UpdateTime:{}
                 Avg: {},Last: {},Volume:{},Turnover:{}
                 Open({}),High({}),Low({}),Close({}) 
                 Ask1:{},{},Bid1:{},{}
-                Ask2:{},{},Bid2:{},{}
-                Ask3:{},{},Bid3:{},{}
-                Ask4:{},{},Bid4:{},{}
-                Ask5:{},{},Bid5:{},{}
                 "#,
                 String::from_c_buf(&q.ActionDay),
                 String::from_c_buf(&q.ExchangeID),
@@ -104,22 +101,22 @@ fn main() -> Result<()> {
                 q.AskVolume1,
                 q.BidPrice1,
                 q.BidVolume1,
-                q.AskPrice2,
-                q.AskVolume2,
-                q.BidPrice2,
-                q.BidVolume2,
-                q.AskPrice3,
-                q.AskVolume3,
-                q.BidPrice3,
-                q.BidVolume3,
-                q.AskPrice4,
-                q.AskVolume4,
-                q.BidPrice4,
-                q.BidVolume4,
-                q.AskPrice5,
-                q.AskVolume5,
-                q.BidPrice5,
-                q.BidVolume5,
+                // q.AskPrice2,
+                // q.AskVolume2,
+                // q.BidPrice2,
+                // q.BidVolume2,
+                // q.AskPrice3,
+                // q.AskVolume3,
+                // q.BidPrice3,
+                // q.BidVolume3,
+                // q.AskPrice4,
+                // q.AskVolume4,
+                // q.BidPrice4,
+                // q.BidVolume4,
+                // q.AskPrice5,
+                // q.AskVolume5,
+                // q.BidPrice5,
+                // q.BidVolume5,
             );
         }
         Event::Login(login) => {
