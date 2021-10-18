@@ -89,20 +89,20 @@ fn main() -> Result<()> {
         }
     }
     // //查询所有合约
-    // let mut req = CThostFtdcQryInstrumentField::default();
-    // tapi.query_instrument(&mut req)?;
+    let mut req = CThostFtdcQryInstrumentField::default();
+    tapi.query_instrument(&mut req)?;
     rx.iter().for_each(|ev| match ev {
         Event::InstrumentStatus(status) => {
-            // log::info!(
-            //     "Exchange:{}, Instrument:{},SettlementGroup:{}, EnterTime:{}, ExchangeInstID:{}",
-            //     String::from_c_buf(&status.ExchangeID),
-            //     String::from_c_buf(&status.InstrumentID),
-            //     String::from_c_buf(&status.SettlementGroupID),
-            //     String::from_c_buf(&status.EnterTime),
-            //     String::from_c_buf(&status.ExchangeInstID)
-            // );
-            let mut req = CThostFtdcQryInstrumentField::default();
-            tapi.query_instrument(&mut req).ok();
+            log::info!(
+                "Exchange:{}, Instrument:{},SettlementGroup:{}, EnterTime:{}, ExchangeInstID:{}",
+                String::from_c_buf(&status.ExchangeID),
+                String::from_c_buf(&status.InstrumentID),
+                String::from_c_buf(&status.SettlementGroupID),
+                String::from_c_buf(&status.EnterTime),
+                String::from_c_buf(&status.ExchangeInstID)
+            );
+            // let mut req = CThostFtdcQryInstrumentField::default();
+            // tapi.query_instrument(&mut req).ok();
         }
         Event::Instrument(info) => {
             if info.IsTrading == 1 {
