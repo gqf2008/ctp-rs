@@ -44,8 +44,8 @@ fn main() -> Result<()> {
     let opt = Opt::from_args();
     let qopt = opt.clone();
     let env = env_logger::Env::default()
-        .filter_or("MY_LOG_LEVEL", qopt.level.as_str())
-        .write_style_or("MY_LOG_STYLE", "always");
+        .filter_or("quote", qopt.level.as_str())
+        .write_style_or("quote", "always");
     env_logger::Builder::from_env(env)
         .format(|buf, record| {
             writeln!(
