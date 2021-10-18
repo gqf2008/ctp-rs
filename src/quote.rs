@@ -157,33 +157,33 @@ impl QuoteApi {
         }
     }
 
-    pub fn unsubscribe_market_data(&self, symbols: &[&str]) -> Result<()> {
+    pub fn unsubscribe_market_data(&self, symbols: &[CString]) -> Result<()> {
         unsafe {
             let mut symbols: Vec<*mut c_char> = symbols
                 .iter()
-                .map(|symbol| CString::new(*symbol).unwrap().as_c_str().as_ptr() as *mut c_char)
+                .map(|symbol| symbol.as_ptr() as *mut c_char)
                 .collect();
             Quote_UnSubscribeMarketData(self.api, symbols.as_mut_ptr(), symbols.len() as i32);
         }
         Ok(())
     }
 
-    pub fn subscribe_for_quote(&self, symbols: &[&str]) -> Result<()> {
+    pub fn subscribe_for_quote(&self, symbols: &[CString]) -> Result<()> {
         unsafe {
             let mut symbols: Vec<*mut c_char> = symbols
                 .iter()
-                .map(|symbol| CString::new(*symbol).unwrap().as_c_str().as_ptr() as *mut c_char)
+                .map(|symbol| symbol.as_ptr() as *mut c_char)
                 .collect();
             Quote_SubscribeForQuoteRsp(self.api, symbols.as_mut_ptr(), symbols.len() as i32);
         }
         Ok(())
     }
 
-    pub fn unsubscribe_for_quote(&self, symbols: &[&str]) -> Result<()> {
+    pub fn unsubscribe_for_quote(&self, symbols: &[CString]) -> Result<()> {
         unsafe {
             let mut symbols: Vec<*mut c_char> = symbols
                 .iter()
-                .map(|symbol| CString::new(*symbol).unwrap().as_c_str().as_ptr() as *mut c_char)
+                .map(|symbol| symbol.as_ptr() as *mut c_char)
                 .collect();
             Quote_UnSubscribeForQuoteRsp(self.api, symbols.as_mut_ptr(), symbols.len() as i32);
         }

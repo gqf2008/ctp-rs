@@ -2,10 +2,10 @@ use anyhow::Result;
 
 use crossbeam::channel::{self, Sender};
 use ctp_rs::{ffi::*, Configuration, FromCBuf, QuoteApi, QuoteSpi, Response};
+use std::ffi::CString;
 use std::io::Write;
 use std::path::PathBuf;
 use structopt::StructOpt;
-use std::ffi::CString;
 
 /// A basic example
 #[derive(StructOpt, Debug, Clone)]
@@ -126,9 +126,7 @@ fn main() -> Result<()> {
             log::info!("trading day {} {:?}",String::from_c_buf(&login.TradingDay), login);
             use std::io::{ BufRead,BufReader};
             let file = std::fs::File::open("symbols.txt").unwrap();
-           
             let symbols:Vec<CString> =BufReader::new(file).lines().map(|x| CString::new(x.unwrap()).unwrap()).collect();
-            //let symbols: Vec<&str> = symbols.iter().map(|s| &s[..]).collect();
             qapi.subscribe_market_data(&symbols).ok();
             log::debug!("sub {:?}",symbols);
            // qapi.subscribe_for_quote(&symbols).ok();
@@ -231,26 +229,28 @@ impl QuoteSpi for Myquote {
     }
     ///订阅行情应答
     fn on_sub_market_data(&self, info: &CThostFtdcSpecificInstrumentField, result: &Response) {
-        log::debug!("{:?} {:?}", info, result);
-        log::debug!("InstrumentID:{} {}",String::from_c_buf(&info.InstrumentID),result.code);
-        
+        log::debug!(
+            "InstrumentID:{} {}",
+            String::from_c_buf(&info.InstrumentID),
+            result.code
+        );
     }
     ///取消订阅行情应答
     fn on_unsub_market_data(&self, info: &CThostFtdcSpecificInstrumentField, result: &Response) {
-        if result.code!=0 {
+        if result.code != 0 {
             log::warn!("{:?} {:?}", info, result);
         }
     }
     ///订阅询价应答
     fn on_sub_for_quote(&self, info: &CThostFtdcSpecificInstrumentField, result: &Response) {
-        if result.code!=0 {
+        if result.code != 0 {
             log::warn!("{:?} {:?}", info, result);
         }
     }
 
     ///取消订阅询价应答
     fn on_unsub_for_quote(&self, info: &CThostFtdcSpecificInstrumentField, result: &Response) {
-        if result.code!=0 {
+        if result.code != 0 {
             log::warn!("{:?} {:?}", info, result);
         }
     }
