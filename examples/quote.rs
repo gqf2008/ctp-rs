@@ -64,7 +64,7 @@ fn main() -> Result<()> {
     let (tx, rx) = channel::bounded(256);
     let mtx = tx.clone();
 
-    let mut qapi = QuoteApi::new(qopt.qpath.to_str().unwrap_or("./"), opt.udp, opt.multicast)?
+    let  qapi = QuoteApi::new(qopt.qpath.to_str().unwrap_or("./"), opt.udp, opt.multicast)?
         .with_configuration(Configuration {
             broker_id: qopt.broker_id,
             user_id: qopt.user_id,
@@ -73,10 +73,9 @@ fn main() -> Result<()> {
             front_addr: qopt.quote_addr,
             passwd: qopt.passwd,
             ..Default::default()
-        });
+        }).with_spi(Myquote(tx));
     qapi.register_front()?;
     qapi.register_fens_user_info()?;
-    qapi.register_spi(Myquote(tx));
     qapi.init();
     rx.iter().for_each(|ev| match ev {
         Event::Quote(q) => {

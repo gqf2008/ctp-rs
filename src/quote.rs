@@ -39,6 +39,13 @@ unsafe impl Send for QuoteApi {}
 unsafe impl Sync for QuoteApi {}
 
 impl QuoteApi {
+    pub fn version<'a>() -> core::result::Result<&'a str, std::str::Utf8Error> {
+        unsafe {
+            let ptr = Quote_GetApiVersion();
+            CStr::from_ptr(ptr).to_str()
+        }
+    }
+
     pub fn new(path: &str, udp: bool, multicast: bool) -> Result<Self> {
         let path = CString::new(path)?;
         let api = unsafe { CreateFtdcMdApi(path.as_ptr(), udp, multicast) };
@@ -55,11 +62,17 @@ impl QuoteApi {
         self
     }
 
-    pub fn version<'a>() -> core::result::Result<&'a str, std::str::Utf8Error> {
-        unsafe {
-            let ptr = Quote_GetApiVersion();
-            CStr::from_ptr(ptr).to_str()
-        }
+    pub fn with_spi<T: QuoteSpi>(mut self, spi: T) -> Self {
+        let trait_object_box: Box<Box<dyn QuoteSpi>> = Box::new(Box::new(spi));
+        let trait_object_pointer =
+            Box::into_raw(trait_object_box) as *mut Box<dyn QuoteSpi> as *mut c_void;
+
+        let quote_spi_stub = unsafe { QuoteSpiStub::new(trait_object_pointer) };
+
+        let ptr = Box::into_raw(Box::new(quote_spi_stub));
+        self.stub = Some(ptr);
+        unsafe { Quote_RegisterSpi(self.api, ptr as *mut CThostFtdcMdSpi) };
+        self
     }
 
     pub fn register_front(&self) -> Result<()> {
@@ -87,18 +100,6 @@ impl QuoteApi {
             Quote_RegisterFensUserInfo(self.api, &mut info);
         }
         Ok(())
-    }
-
-    pub fn register_spi<T: QuoteSpi>(&mut self, spi: T) {
-        let trait_object_box: Box<Box<dyn QuoteSpi>> = Box::new(Box::new(spi));
-        let trait_object_pointer =
-            Box::into_raw(trait_object_box) as *mut Box<dyn QuoteSpi> as *mut c_void;
-
-        let quote_spi_stub = unsafe { QuoteSpiStub::new(trait_object_pointer) };
-
-        let ptr = Box::into_raw(Box::new(quote_spi_stub));
-        self.stub = Some(ptr);
-        unsafe { Quote_RegisterSpi(self.api, ptr as *mut CThostFtdcMdSpi) };
     }
 
     pub fn init(&self) {

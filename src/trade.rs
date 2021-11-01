@@ -37,6 +37,13 @@ unsafe impl Send for TradeApi {}
 unsafe impl Sync for TradeApi {}
 
 impl TradeApi {
+    pub fn version<'a>() -> core::result::Result<&'a str, std::str::Utf8Error> {
+        unsafe {
+            let ptr = Trade_GetApiVersion();
+            CStr::from_ptr(ptr).to_str()
+        }
+    }
+
     pub fn new(path: &str) -> Result<Self> {
         let path = CString::new(path)?;
         let api = unsafe { CreateFtdcTraderApi(path.as_ptr()) };
@@ -51,12 +58,17 @@ impl TradeApi {
         self.conf = conf;
         self
     }
+    pub fn with_spi<T: TradeSpi>(mut self, spi: T) -> Self {
+        let trait_object_box: Box<Box<dyn TradeSpi>> = Box::new(Box::new(spi));
+        let trait_object_pointer =
+            Box::into_raw(trait_object_box) as *mut Box<dyn TradeSpi> as *mut c_void;
 
-    pub fn version<'a>() -> core::result::Result<&'a str, std::str::Utf8Error> {
-        unsafe {
-            let ptr = Trade_GetApiVersion();
-            CStr::from_ptr(ptr).to_str()
-        }
+        let trade_spi_stub = unsafe { TradeSpiStub::new(trait_object_pointer) };
+
+        let ptr = Box::into_raw(Box::new(trade_spi_stub));
+        self.stub = Some(ptr);
+        unsafe { Trade_RegisterSpi(self.api, ptr as *mut CThostFtdcTraderSpi) };
+        self
     }
 
     pub fn init(&self) {
@@ -99,18 +111,6 @@ impl TradeApi {
         Ok(())
     }
 
-    pub fn register_spi<T: TradeSpi>(&mut self, spi: T) -> Result<()> {
-        let trait_object_box: Box<Box<dyn TradeSpi>> = Box::new(Box::new(spi));
-        let trait_object_pointer =
-            Box::into_raw(trait_object_box) as *mut Box<dyn TradeSpi> as *mut c_void;
-
-        let trade_spi_stub = unsafe { TradeSpiStub::new(trait_object_pointer) };
-
-        let ptr = Box::into_raw(Box::new(trade_spi_stub));
-        self.stub = Some(ptr);
-        unsafe { Trade_RegisterSpi(self.api, ptr as *mut CThostFtdcTraderSpi) };
-        Ok(())
-    }
     pub fn subscribe_private_topic(&self, resume_type: ResumeType) -> Result<()> {
         unsafe {
             Trade_SubscribePrivateTopic(self.api, resume_type);

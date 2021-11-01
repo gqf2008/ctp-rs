@@ -62,7 +62,7 @@ fn main() -> Result<()> {
     log::info!("trade.api {}", TradeApi::version()?);
     let (tx, rx) = channel::bounded(256);
     let mtx = tx.clone();
-    let mut tapi =
+    let  tapi =
         TradeApi::new(opt.tpath.to_str().unwrap_or("./"))?.with_configuration(Configuration {
             broker_id: opt.broker_id,
             user_id: opt.user_id,
@@ -71,8 +71,8 @@ fn main() -> Result<()> {
             front_addr: opt.trade_addr,
             passwd: opt.passwd,
             ..Default::default()
-        });
-    tapi.register_spi(MyTradeSpi(tx))?;
+        }).with_spi(MyTradeSpi(tx));
+  
     tapi.subscribe_public_topic(ResumeType::THOST_TERT_RESTART)?;
     tapi.subscribe_private_topic(ResumeType::THOST_TERT_RESTART)?;
     tapi.register_front()?;

@@ -46,8 +46,8 @@ fn main() -> Result<()> {
         .write_style_or("MY_LOG_STYLE", "always");
     env_logger::init_from_env(env);
     log::info!("trade.api {}", TradeApi::version()?);
-    let mut tapi =
-        TradeApi::new(opt.tpath.to_str().unwrap_or("./"))?.with_configuration(Configuration {
+    let tapi = TradeApi::new(opt.tpath.to_str().unwrap_or("./"))?
+        .with_configuration(Configuration {
             broker_id: opt.broker_id,
             user_id: opt.user_id,
             appid: opt.appid,
@@ -55,10 +55,10 @@ fn main() -> Result<()> {
             front_addr: opt.trade_addr,
             passwd: opt.login_passwd.clone(),
             ..Default::default()
-        });
+        })
+        .with_spi(MyTradeSpi);
     tapi.register_front()?;
     tapi.register_fens_user_info()?;
-    tapi.register_spi(MyTradeSpi)?;
     tapi.init();
     std::thread::sleep(std::time::Duration::from_secs(1));
     tapi.login()?;
