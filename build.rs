@@ -46,12 +46,20 @@ fn add_search_path() {}
 
 #[cfg(target_os = "linux")]
 fn add_search_path() {
-    println!("cargo:rustc-link-search={}", "lib/linux64");
+    println!(
+        "cargo:rustc-link-search={}/{}",
+        env::var("CARGO_MANIFEST_DIR").unwrap(),
+        "lib/linux64"
+    );
 }
 
 #[cfg(target_os = "windows")]
 fn add_search_path() {
-    println!("cargo:rustc-link-search={}", "lib/win64");
+    println!(
+        "cargo:rustc-link-search={}/{}",
+        env::var("CARGO_MANIFEST_DIR").unwrap(),
+        "lib/win64"
+    );
 }
 
 #[cfg(target_arch = "x86_64")]
