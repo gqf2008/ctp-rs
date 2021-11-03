@@ -206,7 +206,7 @@ impl QuoteApi {
 pub trait QuoteSpi: Send {
     ///当客户端与交易后台建立起通信连接时（还未登录前），该方法被调用。
     fn on_connected(&self) {
-        log::debug!("on_connected");
+        log::trace!("on_connected");
     }
     ///当客户端与交易后台通信连接断开时，该方法被调用。当发生这个情况后，API会自动重新连接，客户端可不做处理。
     ///@param nReason 错误原因
@@ -216,20 +216,20 @@ pub trait QuoteSpi: Send {
     ///        0x2002 发送心跳失败
     ///        0x2003 收到错误报文
     fn on_disconnected(&self, reason: i32) {
-        log::debug!("on_disconnected reason {}", reason);
+        log::trace!("on_disconnected reason {}", reason);
     }
     ///心跳超时警告。当长时间未收到报文时，该方法被调用。
     ///@param nTimeLapse 距离上次接收报文的时间
     fn on_heartbeat_warning(&self, timelapse: i32) {
-        log::debug!("on_disconnected timelapse {}", timelapse);
+        log::trace!("on_disconnected timelapse {}", timelapse);
     }
     ///错误应答
     fn on_error(&self, result: &Response) {
-        log::debug!("on_login result {:?}", result);
+        log::trace!("on_login result {:?}", result);
     }
     ///登录请求响应
     fn on_login(&self, info: &CThostFtdcRspUserLoginField, result: &Response) {
-        log::debug!(
+        log::trace!(
             "on_login tradingday {} {:?} {:?}",
             String::from_c_buf(&info.TradingDay),
             info,
@@ -238,7 +238,7 @@ pub trait QuoteSpi: Send {
     }
     ///登出请求响应
     fn on_logout(&self, info: &CThostFtdcUserLogoutField, result: &Response) {
-        log::debug!("on_logout info {:?} result {:?}", info, result);
+        log::trace!("on_logout info {:?} result {:?}", info, result);
     }
     ///请求查询组播合约响应
     fn on_query_multicast_instrument(
@@ -246,7 +246,7 @@ pub trait QuoteSpi: Send {
         info: &CThostFtdcMulticastInstrumentField,
         result: &Response,
     ) {
-        log::debug!(
+        log::trace!(
             "on_query_multicast_instrument info {:?} result {:?}",
             info,
             result
@@ -255,28 +255,28 @@ pub trait QuoteSpi: Send {
     ///订阅行情应答
     fn on_sub_market_data(&self, info: &CThostFtdcSpecificInstrumentField, result: &Response) {
         println!("reserve1:{}", String::from_c_buf(&info.reserve1),);
-        log::debug!("on_sub_market_data info {:?} result {:?}", info, result);
+        log::trace!("on_sub_market_data info {:?} result {:?}", info, result);
     }
     ///取消订阅行情应答
     fn on_unsub_market_data(&self, info: &CThostFtdcSpecificInstrumentField, result: &Response) {
-        log::debug!("on_unsub_market_data info {:?} result {:?}", info, result);
+        log::trace!("on_unsub_market_data info {:?} result {:?}", info, result);
     }
     ///订阅询价应答
     fn on_sub_for_quote(&self, info: &CThostFtdcSpecificInstrumentField, result: &Response) {
         println!("reserve1:{}", String::from_c_buf(&info.reserve1));
-        log::debug!("on_sub_for_quote info {:?} result {:?}", info, result);
+        log::trace!("on_sub_for_quote info {:?} result {:?}", info, result);
     }
 
     ///取消订阅询价应答
     fn on_unsub_for_quote(&self, info: &CThostFtdcSpecificInstrumentField, result: &Response) {
-        log::debug!("on_unsub_for_quote info {:?} result {:?}", info, result);
+        log::trace!("on_unsub_for_quote info {:?} result {:?}", info, result);
     }
     ///深度行情通知
     fn on_depth_market_data(&self, info: &CThostFtdcDepthMarketDataField) {
-        log::debug!("on_depth_market_data info {:?}", info);
+        log::trace!("on_depth_market_data info {:?}", info);
     }
     ///询价通知
     fn on_for_quote(&self, info: &CThostFtdcForQuoteRspField) {
-        log::debug!("on_for_quote info {:?}", info);
+        log::trace!("on_for_quote info {:?}", info);
     }
 }

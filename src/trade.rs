@@ -942,35 +942,35 @@ pub trait TradeSpi {
     ///        0x2002 发送心跳失败
     ///        0x2003 收到错误报文
     fn on_disconnected(&self, reason: i32) {
-        log::debug!("reason {}", reason);
+        log::trace!("reason {}", reason);
     }
 
     ///心跳超时警告。当长时间未收到报文时，该方法被调用。
     ///@param nTimeLapse 距离上次接收报文的时间
     fn on_heart_beat_warning(&self, timelapse: i32) {
-        log::debug!("timelapse {}", timelapse);
+        log::trace!("timelapse {}", timelapse);
     }
 
     ///客户端认证响应
     fn on_authenticate(&self, info: &CThostFtdcRspAuthenticateField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///登录请求响应
     fn on_user_login(&self, info: &CThostFtdcRspUserLoginField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///登出请求响应
     fn on_user_logout(&self, info: &CThostFtdcUserLogoutField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///登出请求响应
 
     ///用户口令更新请求响应
     fn on_user_password_update(&self, info: &CThostFtdcUserPasswordUpdateField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///资金账户口令更新请求响应
@@ -979,47 +979,47 @@ pub trait TradeSpi {
         info: &CThostFtdcTradingAccountPasswordUpdateField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///查询用户当前支持的认证模式的回复
     fn on_user_auth_method(&self, info: &CThostFtdcRspUserAuthMethodField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///获取图形验证码请求的回复
     fn on_gen_user_captcha(&self, info: &CThostFtdcRspGenUserCaptchaField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///获取短信验证码请求的回复
     fn on_gen_user_text(&self, info: &CThostFtdcRspGenUserTextField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///报单录入请求响应
     fn on_order_insert(&self, info: &CThostFtdcInputOrderField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///预埋单录入请求响应
     fn on_parked_order_insert(&self, info: &CThostFtdcParkedOrderField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///预埋撤单录入请求响应
     fn on_parked_order_action(&self, info: &CThostFtdcParkedOrderActionField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///报单操作请求响应
     fn on_order_action(&self, info: &CThostFtdcInputOrderActionField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///查询最大报单数量响应
     fn on_qry_max_order_volume(&self, info: &CThostFtdcQryMaxOrderVolumeField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///投资者结算结果确认响应
@@ -1028,12 +1028,12 @@ pub trait TradeSpi {
         info: &CThostFtdcSettlementInfoConfirmField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///删除预埋单响应
     fn on_remove_parked_order(&self, info: &CThostFtdcRemoveParkedOrderField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///删除预埋撤单响应
@@ -1042,32 +1042,32 @@ pub trait TradeSpi {
         info: &CThostFtdcRemoveParkedOrderActionField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///执行宣告录入请求响应
     fn on_exec_order_insert(&self, info: &CThostFtdcInputExecOrderField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///执行宣告操作请求响应
     fn on_exec_order_action(&self, info: &CThostFtdcInputExecOrderActionField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///询价录入请求响应
     fn on_for_quote_insert(&self, info: &CThostFtdcInputForQuoteField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///报价录入请求响应
     fn on_quote_insert(&self, info: &CThostFtdcInputQuoteField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///报价操作请求响应
     fn on_quote_action(&self, info: &CThostFtdcInputQuoteActionField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///批量报单操作请求响应
@@ -1076,7 +1076,7 @@ pub trait TradeSpi {
         info: &CThostFtdcInputBatchOrderActionField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///期权自对冲录入请求响应
@@ -1085,7 +1085,7 @@ pub trait TradeSpi {
         info: &CThostFtdcInputOptionSelfCloseField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///期权自对冲操作请求响应
@@ -1094,42 +1094,42 @@ pub trait TradeSpi {
         info: &CThostFtdcInputOptionSelfCloseActionField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///申请组合录入请求响应
     fn on_comb_action_insert(&self, info: &CThostFtdcInputCombActionField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询报单响应
     fn on_qry_order(&self, info: &CThostFtdcOrderField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询成交响应
     fn on_qry_trade(&self, info: &CThostFtdcTradeField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询投资者持仓响应
     fn on_qry_investor_position(&self, info: &CThostFtdcInvestorPositionField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询资金账户响应
     fn on_qry_trading_account(&self, info: &CThostFtdcTradingAccountField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询投资者响应
     fn on_qry_investor(&self, info: &CThostFtdcInvestorField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询交易编码响应
     fn on_qry_trading_code(&self, info: &CThostFtdcTradingCodeField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询合约保证金率响应
@@ -1138,7 +1138,7 @@ pub trait TradeSpi {
         info: &CThostFtdcInstrumentMarginRateField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询合约手续费率响应
@@ -1147,37 +1147,37 @@ pub trait TradeSpi {
         info: &CThostFtdcInstrumentCommissionRateField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询交易所响应
     fn on_qry_exchange(&self, info: &CThostFtdcExchangeField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询产品响应
     fn on_qry_product(&self, info: &CThostFtdcProductField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询合约响应
     fn on_qry_instrument(&self, info: Option<&CThostFtdcInstrumentField>, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询行情响应
     fn on_qry_depth_market_data(&self, info: &CThostFtdcDepthMarketDataField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询投资者结算结果响应
     fn on_qry_settlement_info(&self, info: &CThostFtdcSettlementInfoField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询转帐银行响应
     fn on_qry_transfer_bank(&self, info: &CThostFtdcTransferBankField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询投资者持仓明细响应
@@ -1186,12 +1186,12 @@ pub trait TradeSpi {
         info: &CThostFtdcInvestorPositionDetailField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询客户通知响应
     fn on_qry_notice(&self, info: &CThostFtdcNoticeField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询结算信息确认响应
@@ -1200,7 +1200,7 @@ pub trait TradeSpi {
         info: &CThostFtdcSettlementInfoConfirmField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询投资者持仓明细响应
@@ -1209,7 +1209,7 @@ pub trait TradeSpi {
         info: &CThostFtdcInvestorPositionCombineDetailField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///查询保证金监管系统经纪公司资金账户密钥响应
@@ -1218,12 +1218,12 @@ pub trait TradeSpi {
         info: &CThostFtdcCFMMCTradingAccountKeyField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询仓单折抵信息响应
     fn on_qry_ewarrant_offset(&self, info: &CThostFtdcEWarrantOffsetField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询投资者品种/跨品种保证金响应
@@ -1232,7 +1232,7 @@ pub trait TradeSpi {
         info: &CThostFtdcInvestorProductGroupMarginField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询交易所保证金率响应
@@ -1241,7 +1241,7 @@ pub trait TradeSpi {
         info: &CThostFtdcExchangeMarginRateField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询交易所调整保证金率响应
@@ -1250,27 +1250,27 @@ pub trait TradeSpi {
         info: &CThostFtdcExchangeMarginRateAdjustField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询汇率响应
     fn on_qry_exchange_rate(&self, info: &CThostFtdcExchangeRateField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询二级代理操作员银期权限响应
     fn on_qry_sec_agent_acid_map(&self, info: &CThostFtdcSecAgentACIDMapField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询产品报价汇率
     fn on_qry_product_exch_rate(&self, info: &CThostFtdcProductExchRateField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询产品组
     fn on_qry_product_group(&self, info: &CThostFtdcProductGroupField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询做市商合约手续费率响应
@@ -1279,7 +1279,7 @@ pub trait TradeSpi {
         info: &CThostFtdcMMInstrumentCommissionRateField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询做市商期权合约手续费响应
@@ -1288,7 +1288,7 @@ pub trait TradeSpi {
         info: &CThostFtdcMMOptionInstrCommRateField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询报单手续费响应
@@ -1297,7 +1297,7 @@ pub trait TradeSpi {
         info: &CThostFtdcInstrumentOrderCommRateField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询资金账户响应
@@ -1306,7 +1306,7 @@ pub trait TradeSpi {
         info: &CThostFtdcTradingAccountField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询二级代理商资金校验模式响应
@@ -1315,7 +1315,7 @@ pub trait TradeSpi {
         info: &CThostFtdcSecAgentCheckModeField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询二级代理商信息响应
@@ -1324,7 +1324,7 @@ pub trait TradeSpi {
         info: &CThostFtdcSecAgentTradeInfoField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询期权交易成本响应
@@ -1333,7 +1333,7 @@ pub trait TradeSpi {
         info: &CThostFtdcOptionInstrTradeCostField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询期权合约手续费响应
@@ -1342,32 +1342,32 @@ pub trait TradeSpi {
         info: &CThostFtdcOptionInstrCommRateField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询执行宣告响应
     fn on_qry_exec_order(&self, info: &CThostFtdcExecOrderField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询询价响应
     fn on_qry_for_quote(&self, info: &CThostFtdcForQuoteField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询报价响应
     fn on_qry_quote(&self, info: &CThostFtdcQuoteField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询期权自对冲响应
     fn on_qry_option_self_slose(&self, info: &CThostFtdcOptionSelfCloseField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询投资单元响应
     fn on_qry_invest_unit(&self, info: &CThostFtdcInvestUnitField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询组合合约安全系数响应
@@ -1376,72 +1376,72 @@ pub trait TradeSpi {
         info: &CThostFtdcCombInstrumentGuardField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询申请组合响应
     fn on_qry_comb_action(&self, info: &CThostFtdcCombActionField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询转帐流水响应
     fn on_qry_transfer_serial(&self, info: &CThostFtdcTransferSerialField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询银期签约关系响应
     fn on_qry_account_register(&self, info: &CThostFtdcAccountregisterField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///错误应答
     fn on_error(&self, result: &Response) {
-        log::debug!("result {:?}", result);
+        log::trace!("result {:?}", result);
     }
 
     ///报单通知
     fn on_rtn_order(&self, info: &CThostFtdcOrderField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///成交通知
     fn on_rtn_trade(&self, info: &CThostFtdcTradeField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///报单录入错误回报
     fn on_err_rtn_order_insert(&self, info: &CThostFtdcInputOrderField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///报单操作错误回报
     fn on_err_rtn_order_action(&self, info: &CThostFtdcOrderActionField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///合约交易状态通知
     fn on_rtn_instrument_status(&self, info: &CThostFtdcInstrumentStatusField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///交易所公告通知
     fn on_rtn_bulletin(&self, info: &CThostFtdcBulletinField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///交易通知
     fn on_rtn_trading_notice(&self, info: &CThostFtdcTradingNoticeInfoField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///提示条件单校验错误
     fn on_rtn_error_conditional_order(&self, info: &CThostFtdcErrorConditionalOrderField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///执行宣告通知
     fn on_rtn_exec_order(&self, info: &CThostFtdcExecOrderField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///执行宣告录入错误回报
@@ -1450,7 +1450,7 @@ pub trait TradeSpi {
         info: &CThostFtdcInputExecOrderField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///执行宣告操作错误回报
@@ -1459,37 +1459,37 @@ pub trait TradeSpi {
         info: &CThostFtdcExecOrderActionField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///询价录入错误回报
     fn on_err_rtn_for_quote_insert(&self, info: &CThostFtdcInputForQuoteField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///报价通知
     fn on_rtn_quote(&self, info: &CThostFtdcQuoteField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///报价录入错误回报
     fn on_err_rtn_quote_insert(&self, info: &CThostFtdcInputQuoteField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///报价操作错误回报
     fn on_err_rtn_quote_action(&self, info: &CThostFtdcQuoteActionField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///询价通知
     fn on_rtn_for_quote(&self, info: &CThostFtdcForQuoteRspField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///保证金监控中心用户令牌
     fn on_rtn_cfmmc_trading_account_token(&self, info: &CThostFtdcCFMMCTradingAccountTokenField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///批量报单操作错误回报
@@ -1498,12 +1498,12 @@ pub trait TradeSpi {
         info: &CThostFtdcBatchOrderActionField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///期权自对冲通知
     fn on_rtn_option_self_close(&self, info: &CThostFtdcOptionSelfCloseField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///期权自对冲录入错误回报
@@ -1512,7 +1512,7 @@ pub trait TradeSpi {
         info: &CThostFtdcInputOptionSelfCloseField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///期权自对冲操作错误回报
@@ -1521,12 +1521,12 @@ pub trait TradeSpi {
         info: &CThostFtdcOptionSelfCloseActionField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///申请组合通知
     fn on_rtn_comb_action(&self, info: &CThostFtdcCombActionField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///申请组合录入错误回报
@@ -1535,17 +1535,17 @@ pub trait TradeSpi {
         info: &CThostFtdcInputCombActionField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询签约银行响应
     fn on_qry_contract_bank(&self, info: &CThostFtdcContractBankField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询预埋单响应
     fn on_qry_parked_order(&self, info: &CThostFtdcParkedOrderField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询预埋撤单响应
@@ -1554,12 +1554,12 @@ pub trait TradeSpi {
         info: &CThostFtdcParkedOrderActionField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询交易通知响应
     fn on_qry_trading_notice(&self, info: &CThostFtdcTradingNoticeField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询经纪公司交易参数响应
@@ -1568,7 +1568,7 @@ pub trait TradeSpi {
         info: &CThostFtdcBrokerTradingParamsField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询经纪公司交易算法响应
@@ -1577,7 +1577,7 @@ pub trait TradeSpi {
         info: &CThostFtdcBrokerTradingAlgosField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求查询监控中心用户令牌
@@ -1586,52 +1586,52 @@ pub trait TradeSpi {
         info: &CThostFtdcQueryCFMMCTradingAccountTokenField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///银行发起银行资金转期货通知
     fn on_rtn_from_bank_to_future_by_bank(&self, info: &CThostFtdcRspTransferField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///银行发起期货资金转银行通知
     fn on_rtn_from_future_to_bank_by_bank(&self, info: &CThostFtdcRspTransferField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///银行发起冲正银行转期货通知
     fn on_rtn_repeal_from_bank_to_future_by_bank(&self, info: &CThostFtdcRspRepealField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///银行发起冲正期货转银行通知
     fn on_rtn_repeal_from_future_to_bank_by_bank(&self, info: &CThostFtdcRspRepealField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///期货发起银行资金转期货通知
     fn on_rtn_from_bank_to_future_by_future(&self, info: &CThostFtdcRspTransferField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///期货发起期货资金转银行通知
     fn on_rtn_from_future_to_bank_by_future(&self, info: &CThostFtdcRspTransferField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///系统运行时期货端手工发起冲正银行转期货请求，银行处理完毕后报盘发回的通知
     fn on_rtn_repeal_from_bank_to_future_by_future_manual(&self, info: &CThostFtdcRspRepealField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///系统运行时期货端手工发起冲正期货转银行请求，银行处理完毕后报盘发回的通知
     fn on_rtn_repeal_from_future_to_bank_by_future_manual(&self, info: &CThostFtdcRspRepealField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///期货发起查询银行余额通知
     fn on_rtn_query_bank_balance_by_future(&self, info: &CThostFtdcNotifyQueryAccountField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///期货发起银行资金转期货错误回报
@@ -1640,7 +1640,7 @@ pub trait TradeSpi {
         info: &CThostFtdcReqTransferField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///期货发起期货资金转银行错误回报
@@ -1649,7 +1649,7 @@ pub trait TradeSpi {
         info: &CThostFtdcReqTransferField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///系统运行时期货端手工发起冲正银行转期货错误回报
@@ -1658,7 +1658,7 @@ pub trait TradeSpi {
         info: &CThostFtdcReqRepealField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///系统运行时期货端手工发起冲正期货转银行错误回报
@@ -1667,7 +1667,7 @@ pub trait TradeSpi {
         info: &CThostFtdcReqRepealField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///期货发起查询银行余额错误回报
@@ -1676,17 +1676,17 @@ pub trait TradeSpi {
         info: &CThostFtdcReqQueryAccountField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///期货发起冲正银行转期货请求，银行处理完毕后报盘发回的通知
     fn on_rtn_repeal_from_bank_to_future_by_future(&self, info: &CThostFtdcRspRepealField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///期货发起冲正期货转银行请求，银行处理完毕后报盘发回的通知
     fn on_rtn_repeal_from_future_to_bank_by_future(&self, info: &CThostFtdcRspRepealField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///期货发起银行资金转期货应答
@@ -1695,7 +1695,7 @@ pub trait TradeSpi {
         info: &CThostFtdcReqTransferField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///期货发起期货资金转银行应答
@@ -1704,7 +1704,7 @@ pub trait TradeSpi {
         info: &CThostFtdcReqTransferField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///期货发起查询银行余额应答
@@ -1713,27 +1713,27 @@ pub trait TradeSpi {
         info: &CThostFtdcReqQueryAccountField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///银行发起银期开户通知
     fn on_rtn_open_account_by_bank(&self, info: &CThostFtdcOpenAccountField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///银行发起银期销户通知
     fn on_rtn_cancel_account_by_bank(&self, info: &CThostFtdcCancelAccountField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///银行发起变更银行账号通知
     fn on_rtn_change_account_by_bank(&self, info: &CThostFtdcChangeAccountField) {
-        log::debug!("info {:?}", info);
+        log::trace!("info {:?}", info);
     }
 
     ///请求查询分类合约响应
     fn on_qry_classified_instrument(&self, info: &CThostFtdcInstrumentField, result: &Response) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///请求组合优惠比例响应
@@ -1742,7 +1742,7 @@ pub trait TradeSpi {
         info: &CThostFtdcCombPromotionParamField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///投资者风险结算持仓查询响应
@@ -1751,7 +1751,7 @@ pub trait TradeSpi {
         info: &CThostFtdcRiskSettleInvstPositionField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 
     ///风险结算产品查询响应
@@ -1760,7 +1760,7 @@ pub trait TradeSpi {
         info: &CThostFtdcRiskSettleProductStatusField,
         result: &Response,
     ) {
-        log::debug!("info {:?} result {:?}", info, result);
+        log::trace!("info {:?} result {:?}", info, result);
     }
 }
 
