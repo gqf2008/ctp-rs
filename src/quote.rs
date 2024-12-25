@@ -6,7 +6,6 @@ use crate::{FromCBuf, ToArray};
 use anyhow::anyhow;
 use anyhow::Result;
 use libc::c_void;
-use std::any;
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
 use std::sync::atomic::{AtomicUsize, Ordering};

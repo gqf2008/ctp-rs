@@ -148,7 +148,8 @@ public:
     void OnRtnForQuoteRsp(CThostFtdcForQuoteRspField *pForQuoteRsp);
 };
 
-extern "C" void QuoteSpiStub_Destructor(QuoteSpiStub *stub) { delete stub; }
+extern "C" void QuoteSpiStub_Destructor(QuoteSpiStub *stub);
+
 extern "C" void QuoteSpiStub_Rust_OnFrontConnected(void *rust_object);
 extern "C" void QuoteSpiStub_Rust_OnFrontDisconnected(void *rust_object, int nReason);
 extern "C" void QuoteSpiStub_Rust_OnHeartBeatWarning(void *rust_object, int nTimeLapse);
@@ -565,7 +566,9 @@ public:
     void OnRspQryRiskSettleProductStatus(CThostFtdcRiskSettleProductStatusField *pRiskSettleProductStatus, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 };
 
-extern "C" void TradeSpiStub_Destructor(TradeSpiStub *stub) { delete stub; }
+extern "C" void TradeSpiStub_Destructor(TradeSpiStub *stub);
+
+
 ///当客户端与交易后台建立起通信连接时（还未登录前），该方法被调用。
 extern "C" void TradeSpiStub_Rust_OnFrontConnected(void *rust_object);
 

@@ -88,6 +88,8 @@ extern "C" int Quote_ReqQryMulticastInstrument(CThostFtdcMdApi *self, CThostFtdc
     return s->ReqQryMulticastInstrument(pQryMulticastInstrument, nRequestID);
 }
 
+extern "C" void QuoteSpiStub_Destructor(QuoteSpiStub *stub) { delete stub; }
+
 // *********************** QuoteSpiStub **************************
 QuoteSpiStub::QuoteSpiStub(void *rust_object) : rust_object(rust_object) {}
 QuoteSpiStub::~QuoteSpiStub()
@@ -646,6 +648,8 @@ extern "C" int Trade_ReqQryRiskSettleProductStatus(CThostFtdcTraderApi *self, CT
     auto s = static_cast<CThostFtdcTraderApi *>(self);
     return s->ReqQryRiskSettleProductStatus(pQryRiskSettleProductStatus, nRequestID);
 }
+
+extern "C" void TradeSpiStub_Destructor(TradeSpiStub *stub) { delete stub; }
 
 // ***********************TradeSpiStub **************************
 TradeSpiStub::TradeSpiStub(void *rust_object) : rust_object(rust_object) {}

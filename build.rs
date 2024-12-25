@@ -1,9 +1,17 @@
 use std::env;
 use std::path::PathBuf;
 
-fn main() {
-    println!("cargo:rustc-link-lib=thostmduserapi_se");
-    println!("cargo:rustc-link-lib=thosttraderapi_se");
+fn build_autocxx() -> miette::Result<()> {
+    let path = std::path::PathBuf::from("./lib/include"); // include path
+    let mut b = autocxx_build::Builder::new("src/autocxx_ctp.rs", &[&path]).build()?;
+    // This assumes all your C++ bindings are in main.rs
+    b.flag_if_supported("-std=c++14").compile("autocxx-ctp"); // arbitrary library name, pick anything
+    println!("cargo:rerun-if-changed=src/autocxx_ctp.rs");
+    // Add instructions to link to any C++ libraries you need.
+    Ok(())
+}
+
+fn build_cxx() {
     println!("cargo:rerun-if-changed=src/bridge.hpp");
     println!("cargo:rerun-if-changed=src/bridge.cpp");
     add_search_path();
@@ -39,6 +47,13 @@ fn main() {
     bindings
         .write_to_file(out_path.join("bindings.rs"))
         .expect("Couldn't write bindings!");
+}
+
+fn main() -> miette::Result<()> {
+    println!("cargo:rustc-link-lib=thostmduserapi_se");
+    println!("cargo:rustc-link-lib=thosttraderapi_se");
+    build_cxx();
+    Ok(())
 }
 
 #[cfg(target_os = "macos")]

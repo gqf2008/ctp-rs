@@ -7,15 +7,21 @@ version = "0.1.0"
 
 [dependencies]
 anyhow = "1.0.44"
-chrono = "0.2.16"
+chrono = "0.4.26"
 crossbeam = "0.8.1"
 encoding = "0.2.33"
-env_logger = "0.9.0"
+env_logger = "0.10.0"
 libc = "0.2.103"
 log = "0.4.14"
 structopt = "0.3.23"
 thiserror = "1.0.30"
+autocxx = "0.26.0"
+cxx = "1.0"
 
 [build-dependencies]
-bindgen = "0.59.1"
+bindgen = "0.66.1"
 cc = "1.0"
+autocxx-build = "0.26.0"
+miette = { version = "5", features = [
+    "fancy",
+] } # optional but gives nicer error messages!
